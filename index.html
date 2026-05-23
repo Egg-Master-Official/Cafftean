@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shaama Luxury | Immersive Fluid Aurora Lookbook</title>
+    <title>Shaama Luxury | 3D Multi-Axis Orbital Lookbook</title>
     
-    <!-- Premium Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Marcellus&family=Plus+Jakarta+Sans:wght@200;300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Plus+Jakarta+Sans:wght@200;300;400;600&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -18,7 +16,7 @@
             --bg-matte: #050103;
             --gold-foil: linear-gradient(135deg, #F3E7C4 0%, #E5C07B 50%, #C29A4F 100%);
             --gold-glow: #E5C07B;
-            --glass-card: rgba(8, 1, 4, 0.45);
+            --glass-card: rgba(12, 3, 7, 0.45);
             --border-lux: rgba(229, 192, 123, 0.15);
         }
 
@@ -27,52 +25,43 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            cursor: none; /* Premium Custom Pointer Always Active */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        @media (pointer: fine) {
+            html, body { cursor: none; }
+            #custom-cursor {
+                position: fixed; width: 6px; height: 6px; background: var(--gold-glow);
+                border-radius: 50%; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%);
+            }
+            #custom-cursor-blur {
+                position: fixed; width: 36px; height: 36px; border: 1px solid rgba(229, 192, 123, 0.4);
+                border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
+                transition: transform 0.06s cubic-bezier(0.1, 1, 0.1, 1);
+            }
         }
 
         body {
             background-color: var(--bg-matte);
             color: #FBF8F6;
             overflow-x: hidden;
-            height: 1100vh; /* Smooth, deep progressive scroll matrix */
+            height: 1100vh; /* Smooth sequential multi-scroll footprint */
         }
 
-        /* --- PREMIUM SMOOTH POINTER INTERFACE --- */
-        #custom-cursor {
-            position: fixed;
-            width: 6px;
-            height: 6px;
-            background: var(--gold-glow);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            transform: translate(-50%, -50%);
-        }
-        #custom-cursor-blur {
-            position: fixed;
-            width: 36px;
-            height: 36px;
-            border: 1px solid rgba(229, 192, 123, 0.4);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.06s cubic-bezier(0.1, 1, 0.1, 1);
-        }
-
-        /* --- IMMERSIVE STAGE VIEWPORT CANVAS CONTAINER --- */
+        /* --- STAGE VIEWPORT --- */
         .stage-viewport {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            perspective: 1600px; /* Enhanced deep depth factor matching lookbook layout */
+            perspective: 1800px; /* Strong 3D convergence perspective factor */
             overflow: hidden;
             z-index: 1;
         }
 
-        /* --- DYNAMIC GEMINI/SIRI STYLE FLUID GLASS AURORA BACKGROUND --- */
+        /* --- CHROMATIC MIST BACKGROUND CANVAS (STAYS FIXED) --- */
         #auroraCanvas {
             position: absolute;
             width: 100%;
@@ -80,66 +69,61 @@
             top: 0;
             left: 0;
             z-index: -2;
-            background: #040103;
+            background: #050103;
+            pointer-events: none;
         }
 
-        /* --- IMMERSIVE FIXED TOP NAVIGATION BAR --- */
+        /* --- NAVIGATION HEADER --- */
         header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background: rgba(4, 1, 3, 0.75);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            background: rgba(5, 1, 3, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(229, 192, 123, 0.08);
             z-index: 1000;
-            padding: 22px 8%;
+            padding: 16px 6%;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo-group {
-            display: flex;
-            flex-direction: column;
-        }
-
         .logo-main {
             font-family: 'Cinzel', serif;
-            font-size: 26px;
+            font-size: 20px;
             font-weight: 800;
             background: var(--gold-foil);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
         }
 
         .logo-sub {
-            font-size: 9px;
+            font-size: 8px;
             text-transform: uppercase;
-            letter-spacing: 5px;
+            letter-spacing: 3px;
             color: rgba(251, 248, 246, 0.5);
-            margin-top: 4px;
+            margin-top: 2px;
             display: block;
         }
 
         nav a {
             text-decoration: none;
             color: rgba(251, 248, 246, 0.7);
-            margin-left: 35px;
-            font-size: 12px;
-            letter-spacing: 2px;
+            margin-left: 24px;
+            font-size: 11px;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            transition: all 0.3s ease;
         }
 
-        nav a:hover {
-            color: var(--gold-glow);
-            text-shadow: 0 0 8px rgba(229, 192, 123, 0.4);
+        @media(max-width: 768px) {
+            nav { display: none; }
+            .logo-main { font-size: 18px; }
         }
 
-        /* --- PROGRESSIVE 3D SEQUENTIAL LAYERS --- */
+        /* --- ISOLATED 3D SPACE CHANNELS --- */
         .lookbook-layer {
             position: absolute;
             top: 0;
@@ -149,10 +133,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            will-change: transform, opacity;
             transform-style: preserve-3d;
             opacity: 0;
             pointer-events: none;
+            will-change: transform, opacity;
         }
 
         .lookbook-layer.active {
@@ -160,351 +144,296 @@
             opacity: 1;
         }
 
-        /* Symmetric Presentation Matrix Layout Grid */
+        /* Adaptive Symmetric Node Shell */
         .matrix-grid-node {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            width: 82%;
-            max-width: 1250px;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 40px;
+            width: 85%;
+            max-width: 1200px;
             align-items: center;
             transform-style: preserve-3d;
         }
 
-        /* Premium Alternating Row Geometry */
-        .lookbook-layer:nth-child(even) .matrix-grid-node {
-            grid-template-columns: 1fr 1fr;
-            direction: rtl;
-        }
-        .lookbook-layer:nth-child(even) .item-desc-card {
-            direction: ltr;
-        }
-
-        /* Outer Frame Container for Floating Products */
+        /* --- RADICAL SEPARATED COMPONENTS WITH X, Y, Z ORBITS --- */
         .image-3d-frame {
             position: relative;
             transform-style: preserve-3d;
-            transform: translateZ(40px);
             display: flex;
             justify-content: center;
+            align-items: center;
+            will-change: transform;
         }
 
-        .image-3d-frame img {
-            width: 85%;
-            height: 480px;
-            object-fit: cover;
-            border: 1px solid rgba(229, 192, 123, 0.15);
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.85);
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
+        /* Isolated Cloth Component with Extra Forward Depth */
+        .cloth-mock-img {
+            width: 80%;
+            max-width: 380px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 35px 60px rgba(0,0,0,0.9));
+            /* Multi-Axis Separation Rule */
+            transform: translateZ(280px); 
+            will-change: transform;
+            transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
         }
 
-        .image-3d-frame:hover img {
-            transform: scale(1.02) translateZ(30px);
-            border-color: var(--gold-glow);
-            box-shadow: 0 50px 100px rgba(139, 0, 50, 0.35);
-        }
-
-        /* Ultra-Premium Glassmorphism Content Panel Card */
+        /* Glass Text Component with Base Depth */
         .item-desc-card {
             background: var(--glass-card);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--border-lux);
-            padding: 55px;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.75);
-            transform: translateZ(80px);
+            padding: 45px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            transform: translateZ(100px);
+            will-change: transform;
+            transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
         }
 
+        /* Perfect Mobile Grid Adjustments */
+        @media(max-width: 1024px) {
+            .matrix-grid-node {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                width: 90%;
+                max-width: 420px;
+                text-align: center;
+            }
+            .cloth-mock-img {
+                width: 65%;
+                max-width: 220px;
+                transform: translateZ(140px);
+            }
+            .item-desc-card {
+                padding: 25px;
+                transform: translateZ(50px);
+            }
+        }
+
+        /* Inner Content Typography */
         .item-tag {
             font-family: 'Cinzel', serif;
-            font-size: 13px;
+            font-size: 11px;
             color: var(--gold-glow);
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             display: block;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .item-title {
             font-family: 'Cinzel', serif;
-            font-size: 36px;
+            font-size: 26px;
             color: #FFF;
-            margin-bottom: 22px;
+            margin-bottom: 12px;
             font-weight: 400;
             letter-spacing: 1px;
-            line-height: 1.3;
         }
 
         .item-desc-text {
-            font-size: 15px;
-            line-height: 1.8;
+            font-size: 13px;
+            line-height: 1.7;
             color: rgba(251, 248, 246, 0.7);
-            margin-bottom: 35px;
+            margin-bottom: 25px;
             font-weight: 300;
         }
 
         .btn-lux-whatsapp {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             background: var(--gold-foil);
             color: #050103;
             text-decoration: none;
-            padding: 16px 35px;
+            padding: 12px 26px;
             font-weight: 600;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            font-size: 12px;
-            transition: all 0.4s ease;
-            box-shadow: 0 10px 25px rgba(229,192,123,0.15);
+            font-size: 11px;
         }
 
-        .btn-lux-whatsapp:hover {
-            background: #25D366;
-            color: #FFF;
-            box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
-            transform: translateY(-2px);
-        }
-
-        /* --- FIXED STIFIED PREMIUM BLOCK MATRIX FOOTER --- */
+        /* --- FIXED PRESENTATION FOOTER BLOCK --- */
         .matrix-footer-block {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 50px;
-            width: 80%;
-            background: rgba(4, 1, 3, 0.98);
-            padding: 60px;
+            gap: 30px;
+            width: 85%;
+            background: rgba(5, 1, 3, 0.95);
+            padding: 40px;
             border: 1px solid var(--border-lux);
-            box-shadow: 0 50px 100px rgba(0,0,0,0.95);
-            transform: translateZ(10px);
+            transform: translateZ(30px);
         }
 
-        .footer-col h4 {
-            font-family: 'Cinzel', serif;
-            color: #FFF;
-            font-size: 18px;
-            margin-bottom: 25px;
-            letter-spacing: 2px;
-        }
+        .footer-col h4 { font-family: 'Cinzel', serif; color: #FFF; font-size: 14px; margin-bottom: 12px; }
+        .footer-col p { font-size: 12px; color: rgba(251, 248, 246, 0.55); line-height: 1.6; }
 
-        .footer-col p {
-            font-size: 14px;
-            line-height: 1.8;
-            color: rgba(251, 248, 246, 0.55);
-            margin-bottom: 12px;
-        }
-
-        .footer-col i {
-            color: var(--gold-glow);
-            margin-right: 10px;
-        }
-
-        /* --- VIEWPORT RESPONSIVE LAYOUT MATRIX CONTROLS --- */
-        @media(max-width: 1024px) {
-            .matrix-grid-node, .lookbook-layer:nth-child(even) .matrix-grid-node { grid-template-columns: 1fr; gap: 40px; width: 90%; }
-            .image-3d-frame img { height: 320px; }
-            .item-title { font-size: 28px; }
-            .matrix-footer-block { grid-template-columns: 1fr; width: 90%; padding: 40px; }
+        @media(max-width: 768px) {
+            .matrix-footer-block { grid-template-columns: 1fr; gap: 20px; padding: 25px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- LUXURY POINTER ENGINE METRICS -->
     <div id="custom-cursor"></div>
     <div id="custom-cursor-blur"></div>
 
     <div class="stage-viewport">
         
-        <!-- FLUID GLASS AURORA CHROMATIC SPECTRA CANVAS BACKGROUND -->
         <canvas id="auroraCanvas"></canvas>
 
-        <!-- TOP BAR GLOBAL NAVIGATION FIXED LAYER -->
         <header>
             <div class="logo-group">
                 <span class="logo-main">Shaama Luxury</span>
-                <span class="logo-sub">Premium Textiles & Chromatic Aurora</span>
+                <span class="logo-sub">3D X-Y-Z Orbital System</span>
             </div>
             <nav>
-                <a href="#" onclick="window.scrollTo(0,0); return false;">Atmosphere</a>
-                <a href="#" onclick="window.scrollTo(0, window.innerHeight * 4); return false;">Collection</a>
-                <a href="#" onclick="window.scrollTo(0, document.documentElement.scrollHeight); return false;">Identity</a>
+                <a href="#">Atmosphere</a>
+                <a href="#">Collection</a>
+                <a href="#">Identity</a>
             </nav>
         </header>
 
-        <!-- ==================== 10 FLUID SEQUENCE LOOKBOOK LAYERS ==================== -->
-        
-        <!-- ITEM 1 -->
         <div class="lookbook-layer active">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80" alt="Tailored Cashmere Overcoat">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80" alt="Item 1">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">01 / Masterpiece Collection</span>
-                    <h2 class="item-title">Tailored Navy Cashmere Overcoat</h2>
-                    <p class="item-desc-text">Premium architectural structured draping featuring signature inner gold-piped lining and heavy high-density winter insulation. Custom measured to drop flawlessly.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%201%20Navy%20Overcoat." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <h2 class="item-title">Navy Cashmere Overcoat</h2>
+                    <p class="item-desc-text">Premium architectural structured draping featuring signature inner gold-piped lining and heavy high-density winter insulation.</p>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 2 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=600&q=80" alt="Gilded Velvet Evening Dress">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=600&q=80" alt="Item 2">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">02 / Couture Special</span>
-                    <h2 class="item-title">Gilded Burgundy Velvet Dress</h2>
-                    <p class="item-desc-text">Intricate hand-finished golden lace thread embroidery laid over heavy Royal velvet fabrics, tailored specifically for grand formal atmospheres.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%202%20Burgundy%20Dress." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <h2 class="item-title">Burgundy Velvet Dress</h2>
+                    <p class="item-desc-text">Intricate hand-finished golden lace thread embroidery laid over heavy Royal velvet fabrics, tailored specifically for grand atmospheres.</p>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 3 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80" alt="Charcoal Tweed Suit">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80" alt="Item 3">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">03 / Corporate Elite</span>
-                    <h2 class="item-title">Charcoal Italian Tweed Suit</h2>
+                    <h2 class="item-title">Italian Tweed Suit</h2>
                     <p class="item-desc-text">Sharp dual-button blazer and slim-fit trouser set meticulously crafted from premium breathable lightweight Italian wool loops.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%203%20Charcoal%20Suit." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 4 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80" alt="Emerald Royal Sherwani">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80" alt="Item 4">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">04 / Heritage Capsule</span>
-                    <h2 class="item-title">Emerald Silk Royal Sherwani</h2>
+                    <h2 class="item-title">Royal Silk Sherwani</h2>
                     <p class="item-desc-text">Celebrating regional excellence with heavy textured Banarasi silk bases, self-on-self patterns, and authentic handcrafted metallic button arrays.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%204%20Royal%20Sherwani." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 5 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=600&q=80" alt="Bespoke Linen Summer Jacket">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=600&q=80" alt="Item 5">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">05 / Casual Resort</span>
-                    <h2 class="item-title">Bespoke Ivory Linen Jacket</h2>
+                    <h2 class="item-title">Ivory Linen Jacket</h2>
                     <p class="item-desc-text">Unstructured natural linen build featuring soft shoulder drops and raw horn buttons. High-density weave offering cool air-circulation matrices.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%205%20Ivory%20Jacket." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 6 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=600&q=80" alt="Cognac Premium Leather Jacket">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=600&q=80" alt="Item 6">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">06 / Urban Avant-Garde</span>
-                    <h2 class="item-title">Cognac Hand-Burnished Leather Bomber</h2>
+                    <h2 class="item-title">Leather Bomber Jacket</h2>
                     <p class="item-desc-text">Ultra-luxulent full grain calfskin leather manually burnished into deep warm tan tones. Heavy-duty steel zip tracks with padded inner lining meshes.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%206%20Leather%20Bomber." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 7 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=600&q=80" alt="Snow White Cashmere Pullover">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=600&q=80" alt="Item 7">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">07 / Minimalist Knitwear</span>
-                    <h2 class="item-title">Snow White Pure Cashmere Pullover</h2>
+                    <h2 class="item-title">Pure Cashmere Pullover</h2>
                     <p class="item-desc-text">Spun from 100% fine Inner-Mongolian cashmere wool loops. Incredibly soft texture profile matching clean minimalist body contours perfectly.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%207%20White%20Pullover." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 8 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?auto=format&fit=crop&w=600&q=80" alt="Classic Indigo Tailored Denim Shirt">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?auto=format&fit=crop&w=600&q=80" alt="Item 8">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">08 / Indigo Craft</span>
-                    <h2 class="item-title">Raw Indigo Selvedge Denim Shirt</h2>
+                    <h2 class="item-title">Selvedge Denim Shirt</h2>
                     <p class="item-desc-text">Shuttle-loomed dark indigo denim featuring classic gold-thread contrast topstitches and authentic Mother of Pearl fastening buttons.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%208%20Denim%20Shirt." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 9 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1566207274740-0f8cf6b7d5a5?auto=format&fit=crop&w=600&q=80" alt="Premium Pastel Silk Saree">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1566207274740-0f8cf6b7d5a5?auto=format&fit=crop&w=600&q=80" alt="Item 9">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">09 / Heirloom Weaves</span>
-                    <h2 class="item-title">Pastel Blush Kanjivaram Silk Saree</h2>
-                    <p class="item-desc-text">Interwoven with pure silver zari threads plated in genuine 24k gold. A traditional royal aesthetic footprint reimagined into ultra-modern fashion formats.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%209%20Silk%20Saree." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <h2 class="item-title">Kanjivaram Silk Saree</h2>
+                    <p class="item-desc-text">Interwoven with pure silver zari threads plated in genuine 24k gold. A traditional royal aesthetic footprint reimagined into fashion formats.</p>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- ITEM 10 -->
         <div class="lookbook-layer">
             <div class="matrix-grid-node">
                 <div class="image-3d-frame">
-                    <img src="https://images.unsplash.com/photo-1593032465175-481da7e4725f?auto=format&fit=crop&w=600&q=80" alt="Double-Breasted Pinstripe Suit">
+                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1593032465175-481da7e4725f?auto=format&fit=crop&w=600&q=80" alt="Item 10">
                 </div>
                 <div class="item-desc-card">
                     <span class="item-tag">10 / Power Sartorial</span>
-                    <h2 class="item-title">Pinstripe Double-Breasted Masterpiece</h2>
-                    <p class="item-desc-text">The ultimate tailoring crest statement. Sharp peak lapels, balanced pinstripe geometries, and structured canvas build providing dominating posture alignment.</p>
-                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%2010%20Pinstripe%20Suit." target="_blank" class="btn-lux-whatsapp">
-                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
-                    </a>
+                    <h2 class="item-title">Pinstripe Suit Masterpiece</h2>
+                    <p class="item-desc-text">The ultimate tailoring crest statement. Sharp peak lapels, balanced pinstripe geometries, and structured canvas build providing posture alignment.</p>
+                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
                 </div>
             </div>
         </div>
 
-        <!-- STAGE 11: FINAL COMPLIANT BLUEPRINT FOOTER BLOCK -->
         <div class="lookbook-layer" id="footerStage">
             <div class="matrix-footer-block">
                 <div class="footer-col">
@@ -512,172 +441,126 @@
                     <p>An elite digital tailor house focusing on highly sophisticated draping, heavy custom insulation builds, and globally hand-picked fabrications.</p>
                 </div>
                 <div class="footer-col">
-                    <h4>Direct Vectors</h4>
-                    <p><i class="fa-solid fa-phone"></i> Direct Tel: 44437244</p>
-                    <p><i class="fa-solid fa-mobile-screen"></i> Mob Concierge: 55185346</p>
-                    <p><i class="fa-solid fa-box-open"></i> P.O. Box Base: 17485</p>
+                    <h4>Direct Contours</h4>
+                    <p><i class="fa-solid fa-phone"></i> Direct Line: 44437244</p>
                 </div>
                 <div class="footer-col">
                     <h4>Official Blueprint</h4>
-                    <p>Registered C.R. Number: 131340</p>
-                    <p style="margin-top: 30px; font-size: 11px; opacity: 0.3; letter-spacing: 2px;">&copy; 2026 SHAAMA LUXURY. CHROMATIC SPECTRUM PIPELINE.</p>
+                    <p>&copy; 2026 SHAAMA LUXURY. OMNI-DIRECTIONAL ENGINE.</p>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- HIGH PERFORMANCE MULTI-LAYER AURORA INTERPOLATOR CORE SCRIPT -->
     <script>
-        /* --- ULTRA-SMOOTH PREMIUM CURSOR ENGINE --- */
+        /* --- DESKTOP CUSTOM POINTER METER --- */
         const cursor = document.getElementById('custom-cursor');
         const cursorBlur = document.getElementById('custom-cursor-blur');
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        let targetMouseX = mouseX, targetMouseY = mouseY;
 
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let targetMouseX = mouseX;
-        let targetMouseY = mouseY;
+        if(cursor && cursorBlur) {
+            document.addEventListener('mousemove', (e) => {
+                targetMouseX = e.clientX; targetMouseY = e.clientY;
+                cursor.style.left = targetMouseX + 'px'; cursor.style.top = targetMouseY + 'px';
+            });
+        }
 
-        document.addEventListener('mousemove', (e) => {
-            targetMouseX = e.clientX;
-            targetMouseY = e.clientY;
-            cursor.style.left = targetMouseX + 'px';
-            cursor.style.top = targetMouseY + 'px';
-        });
-
-        /* --- GRADIENT SPECTRUM LIQUID AURORA ENGINE (GEMINI/SIRI INTERFACE) --- */
+        /* --- PRECISE LIQUID BACKDROP GENERATOR --- */
         const canvas = document.getElementById('auroraCanvas');
         const ctx = canvas.getContext('2d');
-
         let w = canvas.width = window.innerWidth;
         let h = canvas.height = window.innerHeight;
 
         window.addEventListener('resize', () => {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
+            w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight;
         });
 
-        // Kinetic metrics trackers
-        let currentScrollY = 0;
-        let targetScrollY = 0;
-        let scrollVelocity = 0;
-
-        // Configuration matrices for complex organic blending blobs
-        // Blurs lines completely using high overlay opacities and canvas compositing loops
         const blobs = [
-            { x: w * 0.3, y: h * 0.4, r: 280, baseR: 280, vx: 0.4, vy: 0.3, color: 'rgba(139, 0, 50, 0.45)', seed: 0 },   // Velvet Burgundy Orb
-            { x: w * 0.7, y: h * 0.6, r: 340, baseR: 340, vx: -0.3, vy: 0.5, color: 'rgba(229, 192, 123, 0.35)', seed: 5 }, // Gold Foil Metallic Orb
-            { x: w * 0.5, y: h * 0.3, r: 250, baseR: 250, vx: 0.5, vy: -0.4, color: 'rgba(37, 211, 102, 0.22)', seed: 12 }, // Siri Emerald Orb
-            { x: w * 0.2, y: h * 0.7, r: 310, baseR: 310, vx: -0.4, vy: -0.3, color: 'rgba(0, 150, 255, 0.15)', seed: 22 }  // Deep Cosmic Azure Orb
+            { x: w * 0.3, y: h * 0.4, r: 250, color: 'rgba(139, 0, 50, 0.45)', seed: 0 },
+            { x: w * 0.7, y: h * 0.6, r: 290, color: 'rgba(229, 192, 123, 0.35)', seed: 5 },
+            { x: w * 0.5, y: h * 0.3, r: 230, color: 'rgba(37, 211, 102, 0.22)', seed: 12 }
         ];
 
-        function drawChromaticAurora(timestamp) {
-            // Matte structural base clear frame
+        function renderStaticAuroraMist() {
             ctx.fillStyle = '#050103';
             ctx.fillRect(0, 0, w, h);
-
-            // Enable global composite operations for glassy mist blending overlays
             ctx.globalCompositeOperation = 'screen';
-
-            // Custom canvas filter modifier to create authentic smoky air blur properties
-            ctx.filter = 'blur(110px)'; 
+            ctx.filter = 'blur(90px)';
 
             blobs.forEach((blob) => {
-                // Gentle passive spatial wave tracking loop
-                blob.seed += 0.003;
-                
-                // Modulate coordinates using sinusoidal trajectories
-                let driftX = Math.sin(blob.seed + blob.x * 0.001) * 70;
-                let driftY = Math.cos(blob.seed + blob.y * 0.001) * 70;
+                blob.seed += 0.0015;
+                let driftX = Math.sin(blob.seed) * 40;
+                let driftY = Math.cos(blob.seed) * 40;
+                let rx = (blob.x + driftX + w) % w;
+                let ry = (blob.y + driftY + h) % h;
 
-                // Expand radius dimensions relative to structural scroll velocities
-                blob.r = blob.baseR + (scrollVelocity * 6.5);
-
-                // Ensure cursor proximity triggers local organic brightness illumination
-                let distanceToCursor = Math.hypot((blob.x + driftX) - mouseX, (blob.y + driftY) - mouseY);
-                let interactionBoost = 0;
-                if (distanceToCursor < 350) {
-                    interactionBoost = (1 - (distanceToCursor / 350)) * 60;
-                }
-
-                let renderX = blob.x + driftX;
-                // Vertical scrolling pulls aurora positions gracefully up or down matching screen movement
-                let renderY = ((blob.y + driftY - currentScrollY * 0.3) % h + h) % h;
-
-                // Create volumetric radial glow nodes
-                let gradient = ctx.createRadialGradient(
-                    renderX, renderY, 10, 
-                    renderX, renderY, blob.r + interactionBoost
-                );
-                
+                let gradient = ctx.createRadialGradient(rx, ry, 10, rx, ry, blob.r);
                 gradient.addColorStop(0, blob.color);
-                gradient.addColorStop(0.4, blob.color.replace(/[\d\.]+\)$/, '0.2)'));
-                gradient.addColorStop(0.8, blob.color.replace(/[\d\.]+\)$/, '0.05)'));
-                gradient.addColorStop(1, 'transparent');
+                gradient.addColorStop(0.6, 'transparent');
 
                 ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(renderX, renderY, blob.r + interactionBoost, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(rx, ry, blob.r, 0, Math.PI * 2); ctx.fill();
             });
 
-            // Revert configuration states safely
             ctx.globalCompositeOperation = 'source-over';
             ctx.filter = 'none';
-
-            // --- PART 2: RENDER FIBONACCI SPACE AMBIENT DUST MATRIX ---
-            ctx.fillStyle = 'rgba(251, 248, 246, 0.25)';
-            for (let j = 0; j < 40; j++) {
-                let pAngle = (j * 137.5) * (Math.PI / 180);
-                let pRadius = ((timestamp * 0.012 + j * 18) % (Math.max(w, h) * 0.45)) * (1 + scrollVelocity * 0.08);
-                let px = (w / 2) + Math.cos(pAngle) * pRadius;
-                let py = (h / 2) + Math.sin(pAngle) * pRadius;
-                
-                if (px >= 0 && px <= w && py >= 0 && py <= h) {
-                    ctx.beginPath();
-                    ctx.arc(px, py, 0.55, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
         }
 
-        /* --- INERTIA BASED HIGH FIDELITY LERP ENGINE FOR 1 BY 1 FLIGHT --- */
+        /* --- THE COMPREHENSIVE 3D OMNI-DIRECTIONAL (X, Y, Z) SCROLL ENGINE --- */
         const layers = document.querySelectorAll('.lookbook-layer');
         const totalLayers = layers.length;
+        let currentScrollY = 0, targetScrollY = 0;
 
-        function operationalFrameLoop(timestamp) {
-            // Smoothly track pointer position coordinates
+        function animationPipelineLoop(timestamp) {
+            // Smooth pointer mapping
             mouseX += (targetMouseX - mouseX) * 0.12;
             mouseY += (targetMouseY - mouseY) * 0.12;
-            cursorBlur.style.left = mouseX + 'px';
-            cursorBlur.style.top = mouseY + 'px';
+            if(cursorBlur) { cursorBlur.style.left = mouseX + 'px'; cursorBlur.style.top = mouseY + 'px'; }
 
+            // Fetch high precision scroll values
             targetScrollY = window.pageYOffset || document.documentElement.scrollTop;
-            
-            // Capture exact velocity vector length
-            scrollVelocity = Math.abs(targetScrollY - currentScrollY);
-            
-            // 0.06 LERP factor builds exceptional anti-friction presentation glide mechanics
-            currentScrollY += (targetScrollY - currentScrollY) * 0.06;
+            currentScrollY += (targetScrollY - currentScrollY) * 0.06; // Fine-tuned inertia 
 
             const maxScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
             const scrollFraction = maxScrollHeight > 0 ? currentScrollY / maxScrollHeight : 0;
 
-            // Render chromatic aura blobs
-            drawChromaticAurora(timestamp);
+            // Render background mist (remains locked seamlessly behind)
+            renderStaticAuroraMist();
 
-            // Stagger discrete Z travel paths cleanly to execute 1-by-1 emergence out of backdrop mists
+            // Run complex trigonometric spatial mapping for X, Y, Z multi-axis movement
             layers.forEach((layer, index) => {
                 const stepOffset = index / (totalLayers - 1);
                 const progress = scrollFraction - stepOffset;
                 
-                // Safe progressive translation path without center block restrictions
+                // 1. Z-AXIS DEPTH: Brings clothes forward smoothly
                 const zDepthValue = progress * 4600; 
 
+                // Isolate components inside active viewport threshold bounds
                 if (zDepthValue > -1600 && zDepthValue < 600) {
                     layer.classList.add('active');
-                    layer.style.transform = `translateZ(${zDepthValue}px)`;
-                    // Feather light smooth fade curve calculations
+                    
+                    // 2. X-AXIS OFFSET: Pushes elements laterally in alternate curves as they approach
+                    const xTranslation = Math.sin(progress * Math.PI) * (index % 2 === 0 ? 150 : -150);
+                    
+                    // 3. Y-AXIS OFFSET: Elevates clothes upward vertically during transition space
+                    const yTranslation = progress * -800;
+
+                    // 4. COMBINED ORBIT ROTATION MATRICES (X & Y Rotations calculated dynamic on scroll)
+                    const xRotation = progress * -45; // Subtle pitch twist
+                    const yRotation = progress * (index % 2 === 0 ? 35 : -35); // Yaw twist
+
+                    // Inject the combined multi-axis matrix vectors cleanly into the DOM node stream
+                    layer.style.transform = `
+                        translateX(${xTranslation}px) 
+                        translateY(${yTranslation}px) 
+                        translateZ(${zDepthValue}px)
+                        rotateX(${xRotation}deg)
+                        rotateY(${yRotation}deg)
+                    `;
+                    
+                    // Feather light fading opacity curve mapping
                     layer.style.opacity = 1 - Math.abs(zDepthValue / 750);
                 } else {
                     layer.classList.remove('active');
@@ -686,26 +569,40 @@
                 }
             });
 
-            requestAnimationFrame(operationalFrameLoop);
+            requestAnimationFrame(animationPipelineLoop);
         }
 
-        /* --- IMMERSIVE INTERACTION MOUSE TILT PARALLAX VECTOR --- */
-        document.addEventListener('mousemove', (e) => {
-            const hTilt = (window.innerWidth / 2 - e.clientX) * 0.012;
-            const vTilt = (window.innerHeight / 2 - e.clientY) * 0.012;
+        /* --- SEPARATED DEVICE-LEVEL INERTIAL TILT CONTROL PARALLAX --- */
+        function applyTiltParallax(clientX, clientY) {
+            const hTilt = (window.innerWidth / 2 - clientX) * 0.012;
+            const vTilt = (window.innerHeight / 2 - clientY) * 0.012;
             
             layers.forEach(layer => {
                 if (layer.classList.contains('active')) {
-                    const structuralNodes = layer.querySelectorAll('.matrix-grid-node, .matrix-footer-block');
-                    structuralNodes.forEach(node => {
-                        node.style.transform = `rotateY(${-hTilt}deg) rotateX(${vTilt}deg)`;
-                    });
+                    const cloth = layer.querySelector('.cloth-mock-img');
+                    const card = layer.querySelector('.item-desc-card');
+                    const footer = layer.querySelector('.matrix-footer-block');
+
+                    // Layered depth feedback loops inside current transformations
+                    if (cloth) cloth.style.transform = `translateZ(280px) rotateY(${-hTilt * 1.8}deg) rotateX(${vTilt * 1.8}deg)`;
+                    if (card) card.style.transform = `translateZ(100px) rotateY(${-hTilt * 0.8}deg) rotateX(${vTilt * 0.8}deg)`;
+                    if (footer) footer.style.transform = `translateZ(30px) rotateY(${-hTilt * 0.5}deg) rotateX(${vTilt * 0.5}deg)`;
                 }
             });
-        });
+        }
 
-        // Initialize production stage pipeline
-        requestAnimationFrame(operationalFrameLoop);
+        // Desktop move integration
+        document.addEventListener('mousemove', (e) => applyTiltParallax(e.clientX, e.clientY));
+        
+        // Mobile touch integration
+        document.addEventListener('touchmove', (e) => {
+            if(e.touches.length > 0) {
+                applyTiltParallax(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        // Trigger loop pipeline
+        requestAnimationFrame(animationPipelineLoop);
     </script>
 </body>
 </html>
