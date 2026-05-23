@@ -1,877 +1,711 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#08080d">
-  <meta name="description" content="CAFFTEAN premium tea and coffee premix website with smooth live effects in one index.html file.">
-  <title>CAFFTEAN | Premium Coffee & Tea</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #08080d;
-      --bg-2: #101018;
-      --card: rgba(255, 255, 255, 0.075);
-      --card-2: rgba(255, 255, 255, 0.12);
-      --line: rgba(255, 255, 255, 0.14);
-      --text: #fff6e8;
-      --muted: #aaa4ad;
-      --orange: #ff6b35;
-      --gold: #ffd166;
-      --mint: #4ff6c3;
-      --violet: #8d7bff;
-      --danger: #ff4d6d;
-      --shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
-      --glow: 0 0 36px rgba(255, 107, 53, 0.28);
-      --max: 1180px;
-      --header: 78px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      min-width: 320px;
-      margin: 0;
-      overflow-x: hidden;
-      background:
-        radial-gradient(circle at 18% 12%, rgba(255, 107, 53, 0.18), transparent 24rem),
-        radial-gradient(circle at 84% 4%, rgba(79, 246, 195, 0.1), transparent 24rem),
-        radial-gradient(circle at 50% 86%, rgba(141, 123, 255, 0.12), transparent 26rem),
-        linear-gradient(180deg, #08080d 0%, #11111a 50%, #07070b 100%);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      line-height: 1.5;
-    }
-
-    body.menu-open {
-      overflow: hidden;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    canvas,
-    svg {
-      display: block;
-    }
-
-    ::selection {
-      background: var(--orange);
-      color: #140905;
-    }
-
-    #vfxCanvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.9;
-    }
-
-    .grain {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0.13;
-      background-image:
-        linear-gradient(90deg, rgba(255,255,255,0.09) 1px, transparent 1px),
-        linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
-      background-size: 46px 46px;
-      mask-image: linear-gradient(to bottom, #000, transparent 92%);
-    }
-
-    .site-header,
-    main,
-    .site-footer,
-    .toast-stack,
-    .sound-float {
-      position: relative;
-      z-index: 2;
-    }
-
-    main,
-    .site-footer {
-      transition: filter 360ms ease, transform 360ms ease;
-    }
-
-    body.menu-open main,
-    body.menu-open .site-footer {
-      filter: blur(4px) saturate(0.92);
-      transform: scale(0.992);
-    }
-
-    .site-header {
-      position: fixed;
-      top: 12px;
-      left: 50%;
-      width: min(calc(100% - 24px), var(--max));
-      height: 62px;
-      transform: translateX(-50%);
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 18px;
-      padding: 0 12px 0 18px;
-      border: 1px solid var(--line);
-      background: rgba(8, 8, 13, 0.62);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
-      transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
-    }
-
-    .site-header.is-scrolled {
-      border-color: rgba(255, 107, 53, 0.48);
-      background: rgba(8, 8, 13, 0.9);
-      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--text);
-      font-size: clamp(1.25rem, 2.1vw, 1.62rem);
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
-
-    .brand span:last-child {
-      color: var(--orange);
-      text-shadow: 0 0 26px rgba(255, 107, 53, 0.45);
-    }
-
-    .main-nav {
-      --wave-x: 50%;
-      position: fixed;
-      top: 86px;
-      right: max(12px, calc((100vw - var(--max)) / 2));
-      z-index: 30;
-      width: min(420px, calc(100vw - 24px));
-      max-height: min(560px, calc(100dvh - 108px));
-      display: grid;
-      gap: 10px;
-      padding: 14px;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 28px;
-      background:
-        radial-gradient(circle at var(--wave-x) 0%, rgba(255, 255, 255, 0.22), transparent 18rem),
-        linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.065));
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.34),
-        inset 0 -28px 70px rgba(255, 255, 255, 0.035),
-        0 34px 90px rgba(0, 0, 0, 0.54),
-        0 0 38px rgba(255, 107, 53, 0.16);
-      backdrop-filter: blur(28px) saturate(1.35);
-      -webkit-backdrop-filter: blur(28px) saturate(1.35);
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transform: translate3d(24px, -20px, 0) scale(0.88);
-      filter: blur(20px) saturate(1.25);
-      transform-origin: 92% 0;
-      mask-image: linear-gradient(to bottom, transparent 0, #000 30px, #000 calc(100% - 34px), transparent 100%);
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255, 107, 53, 0.55) rgba(255, 255, 255, 0.08);
-      transition:
-        opacity 320ms ease,
-        visibility 320ms ease,
-        transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
-        filter 420ms ease;
-    }
-      height: 22px;
-      border-radius: 999px 999px 999px 0;
-      background: var(--orange);
-      box-shadow: 0 0 28px rgba(255, 107, 53, 0.75);
-      animation: splashDrop 2.7s ease-in-out infinite;
-    }
-
-    .drop:nth-child(8) {
-      left: 28%;
-      top: 22%;
-    }
-
-    .drop:nth-child(9) {
-      right: 18%;
-      top: 31%;
-      animation-delay: 0.7s;
-      background: var(--gold);
-    }
-
-    .drop:nth-child(10) {
-      left: 64%;
-      bottom: 27%;
-      animation-delay: 1.2s;
-      background: var(--mint);
-    }
-
-    .hero-badges {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .float-badge {
-      position: absolute;
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      min-height: 42px;
-      padding: 0 12px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(10, 10, 15, 0.68);
-      color: var(--text);
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow);
-      font-size: 0.78rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      animation: badgeFloat 4.4s ease-in-out infinite;
-    }
-
-    .float-badge b {
-      width: 9px;
-      height: 9px;
-      background: var(--orange);
-      box-shadow: 0 0 16px var(--orange);
-    }
-
-    .badge-one {
-      top: 13%;
-      right: -3%;
-    }
-
-    .badge-two {
-      left: -2%;
-      bottom: 22%;
-      animation-delay: -1.2s;
-    }
-
-    .badge-three {
-      right: 7%;
-      bottom: 7%;
-      animation-delay: -2s;
-    }
-
-    .ticker {
-      overflow: hidden;
-      border-block: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .ticker div {
-      width: max-content;
-      display: flex;
-      gap: 38px;
-      padding: 16px 0;
-      animation: tickerMove 24s linear infinite;
-    }
-
-    .ticker span {
-      color: rgba(255, 246, 232, 0.82);
-      font-size: 0.84rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .services,
-    .products,
-    .about,
-    .contact {
-      padding: clamp(76px, 11vw, 140px) 0;
-    }
-          overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background:
-        radial-gradient(circle at var(--mx) var(--my), rgba(255, 107, 53, 0.22), transparent 18rem),
-        linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.045));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(20px);
-      transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease;
-    }
-
-    .glass-card:hover,
-    .product-card:hover,
-    .about-panel:hover,
-    .contact-form:hover {
-      border-color: rgba(255, 107, 53, 0.5);
-      box-shadow: 0 34px 94px rgba(0, 0, 0, 0.46), 0 0 34px rgba(255, 107, 53, 0.14);
-    }
-
-    .glass-card::after,
-    .product-card::after,
-    .about-panel::after,
-    .contact-form::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(120deg, rgba(255,255,255,0.15), transparent 24%, transparent 72%, rgba(255,255,255,0.08));
-      opacity: 0.7;
-    }
-
-    .service-card {
-      min-height: 292px;
-      display: grid;
-      align-content: end;
-      gap: 16px;
-      padding: 24px;
-    }
-
-    .service-card > * {
-      position: relative;
-      z-index: 2;
-    }
-
-    .service-icon,
-    .feature-icon {
-      width: 38px;
-      height: 38px;
-      display: inline-grid;
-      place-items: center;
-      color: #130905;
-      background: var(--orange);
-      box-shadow: var(--glow);
-    }
-
-    .service-number {
-      position: absolute;
-      top: 18px;
-      right: 18px;
-      color: rgba(255, 246, 232, 0.15);
-      font-size: clamp(3.2rem, 6vw, 5.5rem);
-      font-weight: 950;
-      line-height: 0.8;
-    }
-
-    .service-card p,
-    .product-card p,
-    .feature-item p {
-      color: rgba(255, 246, 232, 0.66);
-      line-height: 1.58;
-    }
-
-    .product-card {
-      min-height: 360px;
-      display: grid;
-      grid-template-rows: auto 1fr;
-    }
-
-    .product-art {
-      position: relative;
-      height: 164px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 58%, rgba(255, 209, 102, 0.38), transparent 5rem),
-        linear-gradient(135deg, rgba(255, 107, 53, 0.18), rgba(79, 246, 195, 0.07));
-    }
-
-    .product-art::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: 18px;
-      width: 116px;
-      height: 78px;
-      transform: translateX(-50%);
-      border-radius: 0 0 36px 36px;
-      background:
-        linear-gradient(110deg, rgba(255,255,255,0.96), rgba(255,255,255,0.52) 44%, var(--orange) 70%, #421207);
-      box-shadow: 0 20px 34px rgba(0, 0, 0, 0.32);
-    }
-
-    .product-art::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: 86px;
-      width: 132px;
-      height: 32px;
-      transform: translateX(-50%) rotateX(65deg);
-      border-radius: 50%;
-      background:
-        radial-gradient(ellipse at center, #2b0d06 0 34%, #ffd166 36% 45%, #fff 48% 60%, rgba(255,255,255,0.14) 62%);
-    }
-
-    .product-steam {
-      position: absolute;
-      left: 50%;
-      bottom: 98px;
-      width: 12px;
-      height: 72px;
-      border-radius: 99px;
-      background: linear-gradient(to top, transparent, rgba(255,255,255,0.6), transparent);
-      filter: blur(8px);
-      animation: smallSteam 3.2s ease-in-out infinite;
-    }
-
-    .product-steam:nth-child(2) {
-      margin-left: -30px;
-      animation-delay: 0.7s;
-    }
-
-    .product-steam:nth-child(3) {
-      margin-left: 28px;
-      animation-delay: 1.2s;
-    }
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      backdrop-filter: blur(14px);
-    }
-
-    .product-content {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      padding: 18px;
-    }
-
-    .product-index {
-      color: var(--orange);
-      font-size: 0.86rem;
-      font-weight: 950;
-    }
-
-    .product-content h3 {
-      margin: 12px 0 10px;
-    }
-
-    .card-btn {
-      justify-self: start;
-      min-height: 42px;
-    }
-
-    .about {
-      display: grid;
-      gap: 18px;
-    }
-
-    .about-panel {
-      min-height: 354px;
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.72fr);
-      gap: clamp(28px, 6vw, 70px);
-      align-items: end;
-      padding: clamp(24px, 5vw, 54px);
-    }
-
-    .about-panel > * {
-      position: relative;
-      z-index: 2;
-    }
-
-    .stats-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .stats-grid div {
-      min-height: 90px;
-      padding: 16px;
-      border-left: 3px solid var(--orange);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .stats-grid strong {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--text);
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      font-weight: 950;
-      line-height: 0.9;
-    }
-
-    .stats-grid span {
-      color: var(--muted);
-      font-weight: 800;
-    }
-
-    .feature-item {
-      min-height: 190px;
-      padding: 22px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.045);
-    }
-
-    .feature-icon {
-      margin-bottom: 24px;
-      background: var(--mint);
-      box-shadow: 0 0 28px rgba(79, 246, 195, 0.24);
-    }
-
-    .feature-item h3 {
-      margin-bottom: 10px;
-    }
-
-    .contact {
-      display: grid;
-      grid-template-columns: minmax(0, 0.82fr) minmax(320px, 0.72fr);
-      gap: clamp(28px, 7vw, 92px);
-      align-items: start;
-    }
-
-    .contact-copy {
-      position: sticky;
-      top: 116px;
-    }
-
-    .contact-copy h2 {
-      margin-bottom: 24px;
-    }
-
-    .contact-lines {
-      display: grid;
-      gap: 12px;
-      margin-top: 28px;
-    }
-
-    .contact-lines a {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      color: rgba(255, 246, 232, 0.82);
-      font-weight: 800;
-    }
-
-    .contact-dot {
-      width: 10px;
-      height: 10px;
-      background: var(--orange);
-      box-shadow: 0 0 14px var(--orange);
-    }
-      }
-
-      h2 {
-        font-size: clamp(2rem, 12vw, 3.2rem);
-      }
-
-      .hero-actions {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-
-      .btn {
-        width: 100%;
-      }
-
-      .hero-stage {
-        min-height: 410px;
-      }
-
-      .stage-ring {
-        inset: 0 0 4% 4%;
-      }
-
-      .float-cup {
-        left: -3%;
-        bottom: 4%;
-        width: min(82vw, 330px);
-      }
-
-      .float-badge {
-        display: none;
-      }
-
-      .service-grid,
-      .product-grid,
-      .feature-list {
-        grid-template-columns: 1fr;
-      }
-
-      .product-card {
-        min-height: 0;
-      }
-
-      .about-panel {
-        min-height: auto;
-        padding: 22px;
-      }
-
-      .section-kicker {
-        display: grid;
-      }
-
-      .sound-float {
-        right: 12px;
-        bottom: 12px;
-      }
-
-      .toast-stack {
-        right: 12px;
-        bottom: 68px;
-        width: calc(100vw - 24px);
-      }
-    }
-
-    @media (max-width: 440px) {
-      .section-shell {
-        width: min(calc(100% - 20px), var(--max));
-      }
-
-      .brand {
-        font-size: 1.14rem;
-      }
-
-      .icon-btn {
-        width: 38px;
-        height: 38px;
-      }
-
-      .hero-text {
-        font-size: 0.98rem;
-      }
-
-      .contact-form {
-        padding: 16px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shaama Luxury | Immersive Fluid Aurora Lookbook</title>
+    
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Marcellus&family=Plus+Jakarta+Sans:wght@200;300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-matte: #050103;
+            --gold-foil: linear-gradient(135deg, #F3E7C4 0%, #E5C07B 50%, #C29A4F 100%);
+            --gold-glow: #E5C07B;
+            --glass-card: rgba(8, 1, 4, 0.45);
+            --border-lux: rgba(229, 192, 123, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: none; /* Premium Custom Pointer Always Active */
+        }
+
+        body {
+            background-color: var(--bg-matte);
+            color: #FBF8F6;
+            overflow-x: hidden;
+            height: 1100vh; /* Smooth, deep progressive scroll matrix */
+        }
+
+        /* --- PREMIUM SMOOTH POINTER INTERFACE --- */
+        #custom-cursor {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: var(--gold-glow);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+        }
+        #custom-cursor-blur {
+            position: fixed;
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(229, 192, 123, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.06s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+
+        /* --- IMMERSIVE STAGE VIEWPORT CANVAS CONTAINER --- */
+        .stage-viewport {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            perspective: 1600px; /* Enhanced deep depth factor matching lookbook layout */
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* --- DYNAMIC GEMINI/SIRI STYLE FLUID GLASS AURORA BACKGROUND --- */
+        #auroraCanvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -2;
+            background: #040103;
+        }
+
+        /* --- IMMERSIVE FIXED TOP NAVIGATION BAR --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(4, 1, 3, 0.75);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(229, 192, 123, 0.08);
+            z-index: 1000;
+            padding: 22px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            font-weight: 800;
+            background: var(--gold-foil);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+        }
+
+        .logo-sub {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: rgba(251, 248, 246, 0.5);
+            margin-top: 4px;
+            display: block;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: rgba(251, 248, 246, 0.7);
+            margin-left: 35px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--gold-glow);
+            text-shadow: 0 0 8px rgba(229, 192, 123, 0.4);
+        }
+
+        /* --- PROGRESSIVE 3D SEQUENTIAL LAYERS --- */
+        .lookbook-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            will-change: transform, opacity;
+            transform-style: preserve-3d;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .lookbook-layer.active {
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        /* Symmetric Presentation Matrix Layout Grid */
+        .matrix-grid-node {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            width: 82%;
+            max-width: 1250px;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        /* Premium Alternating Row Geometry */
+        .lookbook-layer:nth-child(even) .matrix-grid-node {
+            grid-template-columns: 1fr 1fr;
+            direction: rtl;
+        }
+        .lookbook-layer:nth-child(even) .item-desc-card {
+            direction: ltr;
+        }
+
+        /* Outer Frame Container for Floating Products */
+        .image-3d-frame {
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(40px);
+            display: flex;
+            justify-content: center;
+        }
+
+        .image-3d-frame img {
+            width: 85%;
+            height: 480px;
+            object-fit: cover;
+            border: 1px solid rgba(229, 192, 123, 0.15);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.85);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
+        }
+
+        .image-3d-frame:hover img {
+            transform: scale(1.02) translateZ(30px);
+            border-color: var(--gold-glow);
+            box-shadow: 0 50px 100px rgba(139, 0, 50, 0.35);
+        }
+
+        /* Ultra-Premium Glassmorphism Content Panel Card */
+        .item-desc-card {
+            background: var(--glass-card);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-lux);
+            padding: 55px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.75);
+            transform: translateZ(80px);
+        }
+
+        .item-tag {
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            color: var(--gold-glow);
+            letter-spacing: 3px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .item-title {
+            font-family: 'Cinzel', serif;
+            font-size: 36px;
+            color: #FFF;
+            margin-bottom: 22px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        .item-desc-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: rgba(251, 248, 246, 0.7);
+            margin-bottom: 35px;
+            font-weight: 300;
+        }
+
+        .btn-lux-whatsapp {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: var(--gold-foil);
+            color: #050103;
+            text-decoration: none;
+            padding: 16px 35px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 12px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px rgba(229,192,123,0.15);
+        }
+
+        .btn-lux-whatsapp:hover {
+            background: #25D366;
+            color: #FFF;
+            box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* --- FIXED STIFIED PREMIUM BLOCK MATRIX FOOTER --- */
+        .matrix-footer-block {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 50px;
+            width: 80%;
+            background: rgba(4, 1, 3, 0.98);
+            padding: 60px;
+            border: 1px solid var(--border-lux);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.95);
+            transform: translateZ(10px);
+        }
+
+        .footer-col h4 {
+            font-family: 'Cinzel', serif;
+            color: #FFF;
+            font-size: 18px;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+
+        .footer-col p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(251, 248, 246, 0.55);
+            margin-bottom: 12px;
+        }
+
+        .footer-col i {
+            color: var(--gold-glow);
+            margin-right: 10px;
+        }
+
+        /* --- VIEWPORT RESPONSIVE LAYOUT MATRIX CONTROLS --- */
+        @media(max-width: 1024px) {
+            .matrix-grid-node, .lookbook-layer:nth-child(even) .matrix-grid-node { grid-template-columns: 1fr; gap: 40px; width: 90%; }
+            .image-3d-frame img { height: 320px; }
+            .item-title { font-size: 28px; }
+            .matrix-footer-block { grid-template-columns: 1fr; width: 90%; padding: 40px; }
+        }
+    </style>
 </head>
 <body>
-  <canvas id="vfxCanvas" aria-hidden="true"></canvas>
-  <div class="grain" aria-hidden="true"></div>
-          <input name="name" type="text" placeholder="Your name" autocomplete="name" required>
-        </label>
-        <label>
-          <span>Email</span>
-          <input name="email" type="email" placeholder="you@company.com" autocomplete="email" required>
-        </label>
-        <label>
-          <span>Blend interest</span>
-          <select name="blend" required>
-            <option value="">Choose a blend</option>
-            <option>Cardamom Tea</option>
-            <option>Cardamom Masala Tea</option>
-            <option>Cappuccino Coffee</option>
-            <option>Regular Coffee</option>
-            <option>Masala Tea</option>
-            <option>Lemongrass Ginger</option>
-          </select>
-        </label>
-        <label>
-          <span>Message</span>
-          <textarea name="message" rows="4" placeholder="Quantity, machine type, city..." required></textarea>
-        </label>
-        <button class="btn btn-primary" type="submit">Send Request</button>
-        <p class="form-state" data-form-state role="status" aria-live="polite"></p>
-      </form>
-    </section>
-  </main>
 
-  <footer class="site-footer">
-    <div>
-      <a class="brand footer-brand" href="#home"><span>CAFF</span><span>TEAN</span></a>
-      <p>Premium coffee vending machines, premix powders, and payment-ready beverage counters.</p>
+    <!-- LUXURY POINTER ENGINE METRICS -->
+    <div id="custom-cursor"></div>
+    <div id="custom-cursor-blur"></div>
+
+    <div class="stage-viewport">
+        
+        <!-- FLUID GLASS AURORA CHROMATIC SPECTRA CANVAS BACKGROUND -->
+        <canvas id="auroraCanvas"></canvas>
+
+        <!-- TOP BAR GLOBAL NAVIGATION FIXED LAYER -->
+        <header>
+            <div class="logo-group">
+                <span class="logo-main">Shaama Luxury</span>
+                <span class="logo-sub">Premium Textiles & Chromatic Aurora</span>
+            </div>
+            <nav>
+                <a href="#" onclick="window.scrollTo(0,0); return false;">Atmosphere</a>
+                <a href="#" onclick="window.scrollTo(0, window.innerHeight * 4); return false;">Collection</a>
+                <a href="#" onclick="window.scrollTo(0, document.documentElement.scrollHeight); return false;">Identity</a>
+            </nav>
+        </header>
+
+        <!-- ==================== 10 FLUID SEQUENCE LOOKBOOK LAYERS ==================== -->
+        
+        <!-- ITEM 1 -->
+        <div class="lookbook-layer active">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80" alt="Tailored Cashmere Overcoat">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">01 / Masterpiece Collection</span>
+                    <h2 class="item-title">Tailored Navy Cashmere Overcoat</h2>
+                    <p class="item-desc-text">Premium architectural structured draping featuring signature inner gold-piped lining and heavy high-density winter insulation. Custom measured to drop flawlessly.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%201%20Navy%20Overcoat." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 2 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=600&q=80" alt="Gilded Velvet Evening Dress">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">02 / Couture Special</span>
+                    <h2 class="item-title">Gilded Burgundy Velvet Dress</h2>
+                    <p class="item-desc-text">Intricate hand-finished golden lace thread embroidery laid over heavy Royal velvet fabrics, tailored specifically for grand formal atmospheres.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%202%20Burgundy%20Dress." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 3 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80" alt="Charcoal Tweed Suit">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">03 / Corporate Elite</span>
+                    <h2 class="item-title">Charcoal Italian Tweed Suit</h2>
+                    <p class="item-desc-text">Sharp dual-button blazer and slim-fit trouser set meticulously crafted from premium breathable lightweight Italian wool loops.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%203%20Charcoal%20Suit." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 4 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80" alt="Emerald Royal Sherwani">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">04 / Heritage Capsule</span>
+                    <h2 class="item-title">Emerald Silk Royal Sherwani</h2>
+                    <p class="item-desc-text">Celebrating regional excellence with heavy textured Banarasi silk bases, self-on-self patterns, and authentic handcrafted metallic button arrays.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%204%20Royal%20Sherwani." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 5 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=600&q=80" alt="Bespoke Linen Summer Jacket">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">05 / Casual Resort</span>
+                    <h2 class="item-title">Bespoke Ivory Linen Jacket</h2>
+                    <p class="item-desc-text">Unstructured natural linen build featuring soft shoulder drops and raw horn buttons. High-density weave offering cool air-circulation matrices.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%205%20Ivory%20Jacket." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 6 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=600&q=80" alt="Cognac Premium Leather Jacket">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">06 / Urban Avant-Garde</span>
+                    <h2 class="item-title">Cognac Hand-Burnished Leather Bomber</h2>
+                    <p class="item-desc-text">Ultra-luxulent full grain calfskin leather manually burnished into deep warm tan tones. Heavy-duty steel zip tracks with padded inner lining meshes.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%206%20Leather%20Bomber." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 7 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=600&q=80" alt="Snow White Cashmere Pullover">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">07 / Minimalist Knitwear</span>
+                    <h2 class="item-title">Snow White Pure Cashmere Pullover</h2>
+                    <p class="item-desc-text">Spun from 100% fine Inner-Mongolian cashmere wool loops. Incredibly soft texture profile matching clean minimalist body contours perfectly.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%207%20White%20Pullover." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 8 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?auto=format&fit=crop&w=600&q=80" alt="Classic Indigo Tailored Denim Shirt">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">08 / Indigo Craft</span>
+                    <h2 class="item-title">Raw Indigo Selvedge Denim Shirt</h2>
+                    <p class="item-desc-text">Shuttle-loomed dark indigo denim featuring classic gold-thread contrast topstitches and authentic Mother of Pearl fastening buttons.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%208%20Denim%20Shirt." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 9 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1566207274740-0f8cf6b7d5a5?auto=format&fit=crop&w=600&q=80" alt="Premium Pastel Silk Saree">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">09 / Heirloom Weaves</span>
+                    <h2 class="item-title">Pastel Blush Kanjivaram Silk Saree</h2>
+                    <p class="item-desc-text">Interwoven with pure silver zari threads plated in genuine 24k gold. A traditional royal aesthetic footprint reimagined into ultra-modern fashion formats.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%209%20Silk%20Saree." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEM 10 -->
+        <div class="lookbook-layer">
+            <div class="matrix-grid-node">
+                <div class="image-3d-frame">
+                    <img src="https://images.unsplash.com/photo-1593032465175-481da7e4725f?auto=format&fit=crop&w=600&q=80" alt="Double-Breasted Pinstripe Suit">
+                </div>
+                <div class="item-desc-card">
+                    <span class="item-tag">10 / Power Sartorial</span>
+                    <h2 class="item-title">Pinstripe Double-Breasted Masterpiece</h2>
+                    <p class="item-desc-text">The ultimate tailoring crest statement. Sharp peak lapels, balanced pinstripe geometries, and structured canvas build providing dominating posture alignment.</p>
+                    <a href="https://wa.me/9155185346?text=Hi%20Shaama%20Luxury,%20I'm%20interested%20in%20Item%2010%20Pinstripe%20Suit." target="_blank" class="btn-lux-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i> Inquire Via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE 11: FINAL COMPLIANT BLUEPRINT FOOTER BLOCK -->
+        <div class="lookbook-layer" id="footerStage">
+            <div class="matrix-footer-block">
+                <div class="footer-col">
+                    <h4>Maison Shaama</h4>
+                    <p>An elite digital tailor house focusing on highly sophisticated draping, heavy custom insulation builds, and globally hand-picked fabrications.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Direct Vectors</h4>
+                    <p><i class="fa-solid fa-phone"></i> Direct Tel: 44437244</p>
+                    <p><i class="fa-solid fa-mobile-screen"></i> Mob Concierge: 55185346</p>
+                    <p><i class="fa-solid fa-box-open"></i> P.O. Box Base: 17485</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Official Blueprint</h4>
+                    <p>Registered C.R. Number: 131340</p>
+                    <p style="margin-top: 30px; font-size: 11px; opacity: 0.3; letter-spacing: 2px;">&copy; 2026 SHAAMA LUXURY. CHROMATIC SPECTRUM PIPELINE.</p>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <div class="footer-links">
-      <a href="#home">Home</a>
-      <a href="#services">Services</a>
-      <a href="#products">Products</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </div>
-    <div class="social-links" aria-label="Social links">
-      <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram">IG</a>
-      <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" aria-label="LinkedIn">IN</a>
-      <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook">FB</a>
-    </div>
-  </footer>
 
-  <button class="icon-btn sound-float" type="button" data-sound-copy aria-label="Toggle ambient sound">
-    <svg data-sound-float-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <path d="M23 9 17 15"></path>
-      <path d="M17 9 23 15"></path>
-    </svg>
-  </button>
-  <div class="toast-stack" data-toast-stack aria-live="polite" aria-atomic="true"></div>
+    <!-- HIGH PERFORMANCE MULTI-LAYER AURORA INTERPOLATOR CORE SCRIPT -->
+    <script>
+        /* --- ULTRA-SMOOTH PREMIUM CURSOR ENGINE --- */
+        const cursor = document.getElementById('custom-cursor');
+        const cursorBlur = document.getElementById('custom-cursor-blur');
 
-  <script>
-    (() => {
-      const header = document.querySelector("[data-header]");
-      const nav = document.querySelector("[data-nav]");
-      const menuBtn = document.querySelector("[data-menu]");
-      const soundButtons = document.querySelectorAll("[data-sound], [data-sound-copy]");
-      const soundIcon = document.querySelector("[data-sound-icon]");
-      const soundFloatIcon = document.querySelector("[data-sound-float-icon]");
-      const canvas = document.querySelector("#vfxCanvas");
-      const ctx = canvas.getContext("2d", { alpha: true });
-      const toastStack = document.querySelector("[data-toast-stack]");
-      const form = document.querySelector("[data-form]");
-      const formState = document.querySelector("[data-form-state]");
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const coarse = window.matchMedia("(pointer: coarse)").matches;
-      let audioContext;
-      let droneOsc;
-      let droneGain;
-      let soundOn = false;
-      let width = 0;
-      let height = 0;
-      let dpr = 1;
-      const pointer = { x: -999, y: -999 };
-      const particles = [];
-      const colors = ["255, 107, 53", "255, 209, 102", "79, 246, 195", "255, 255, 255"];
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let targetMouseX = mouseX;
+        let targetMouseY = mouseY;
 
-      function iconMuted() {
-        return '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M23 9 17 15"></path><path d="M17 9 23 15"></path>';
-      }
+        document.addEventListener('mousemove', (e) => {
+            targetMouseX = e.clientX;
+            targetMouseY = e.clientY;
+            cursor.style.left = targetMouseX + 'px';
+            cursor.style.top = targetMouseY + 'px';
+        });
 
-      function iconSound() {
-        return '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path>';
-      }
-        canvas.height = Math.floor(height * dpr);
-        canvas.style.width = width + "px";
-        canvas.style.height = height + "px";
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
+        /* --- GRADIENT SPECTRUM LIQUID AURORA ENGINE (GEMINI/SIRI INTERFACE) --- */
+        const canvas = document.getElementById('auroraCanvas');
+        const ctx = canvas.getContext('2d');
 
-      function random(min, max) {
-        return Math.random() * (max - min) + min;
-      }
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
 
-      function createParticle(x, y, type) {
-        const isSmoke = type === "smoke";
-        const life = random(120, 360);
-        return {
-          x,
-          y,
-          type,
-          radius: isSmoke ? random(12, 34) : random(1.2, 3.3),
-          vx: random(-0.18, 0.18),
-          vy: isSmoke ? random(-0.34, -0.1) : random(-0.18, 0.16),
-          alpha: isSmoke ? random(0.035, 0.1) : random(0.28, 0.74),
-          life,
-          maxLife: life,
-          color: colors[Math.floor(Math.random() * colors.length)]
-        };
-      }
+        window.addEventListener('resize', () => {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        });
 
-      function seedParticles() {
-        particles.length = 0;
-        const budget = coarse ? 70 : 120;
-        const count = Math.min(budget, Math.floor(width * height / (coarse ? 13000 : 9000)));
-        for (let index = 0; index < count; index += 1) {
-          particles.push(createParticle(Math.random() * width, Math.random() * height, Math.random() > 0.58 ? "spark" : "smoke"));
-        }
-      }
+        // Kinetic metrics trackers
+        let currentScrollY = 0;
+        let targetScrollY = 0;
+        let scrollVelocity = 0;
 
-      function burstAtCard(card) {
-        if (prefersReduced) return;
-        const rect = card.getBoundingClientRect();
-        const x = rect.left + rect.width * 0.5;
-        const y = rect.top + rect.height * 0.24;
-        for (let index = 0; index < 14; index += 1) {
-          const particle = createParticle(x, y, "spark");
-          particle.vx = random(-2.1, 2.1);
-          particle.vy = random(-3, -0.4);
-          particle.radius = random(2, 4.5);
-          particle.life = 42;
-          particle.maxLife = 42;
-          particle.alpha = 0.9;
-          particles.push(particle);
-        }
-      }
+        // Configuration matrices for complex organic blending blobs
+        // Blurs lines completely using high overlay opacities and canvas compositing loops
+        const blobs = [
+            { x: w * 0.3, y: h * 0.4, r: 280, baseR: 280, vx: 0.4, vy: 0.3, color: 'rgba(139, 0, 50, 0.45)', seed: 0 },   // Velvet Burgundy Orb
+            { x: w * 0.7, y: h * 0.6, r: 340, baseR: 340, vx: -0.3, vy: 0.5, color: 'rgba(229, 192, 123, 0.35)', seed: 5 }, // Gold Foil Metallic Orb
+            { x: w * 0.5, y: h * 0.3, r: 250, baseR: 250, vx: 0.5, vy: -0.4, color: 'rgba(37, 211, 102, 0.22)', seed: 12 }, // Siri Emerald Orb
+            { x: w * 0.2, y: h * 0.7, r: 310, baseR: 310, vx: -0.4, vy: -0.3, color: 'rgba(0, 150, 255, 0.15)', seed: 22 }  // Deep Cosmic Azure Orb
+        ];
 
-      window.addEventListener("pointermove", (event) => {
-        pointer.x = event.clientX;
-        pointer.y = event.clientY;
-      }, { passive: true });
+        function drawChromaticAurora(timestamp) {
+            // Matte structural base clear frame
+            ctx.fillStyle = '#050103';
+            ctx.fillRect(0, 0, w, h);
 
-      let resizeTimer = 0;
-      window.addEventListener("resize", () => {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(() => {
-          resizeCanvas();
-          seedParticles();
-        }, 120);
-      }, { passive: true });
+            // Enable global composite operations for glassy mist blending overlays
+            ctx.globalCompositeOperation = 'screen';
 
-      function drawParticle(particle, index) {
-        const dx = particle.x - pointer.x;
-        const dy = particle.y - pointer.y;
-        const distance = Math.hypot(dx, dy);
-        if (!coarse && distance < 132) {
-          particle.vx += dx / 13000;
-          particle.vy += dy / 13000;
+            // Custom canvas filter modifier to create authentic smoky air blur properties
+            ctx.filter = 'blur(110px)'; 
+
+            blobs.forEach((blob) => {
+                // Gentle passive spatial wave tracking loop
+                blob.seed += 0.003;
+                
+                // Modulate coordinates using sinusoidal trajectories
+                let driftX = Math.sin(blob.seed + blob.x * 0.001) * 70;
+                let driftY = Math.cos(blob.seed + blob.y * 0.001) * 70;
+
+                // Expand radius dimensions relative to structural scroll velocities
+                blob.r = blob.baseR + (scrollVelocity * 6.5);
+
+                // Ensure cursor proximity triggers local organic brightness illumination
+                let distanceToCursor = Math.hypot((blob.x + driftX) - mouseX, (blob.y + driftY) - mouseY);
+                let interactionBoost = 0;
+                if (distanceToCursor < 350) {
+                    interactionBoost = (1 - (distanceToCursor / 350)) * 60;
+                }
+
+                let renderX = blob.x + driftX;
+                // Vertical scrolling pulls aurora positions gracefully up or down matching screen movement
+                let renderY = ((blob.y + driftY - currentScrollY * 0.3) % h + h) % h;
+
+                // Create volumetric radial glow nodes
+                let gradient = ctx.createRadialGradient(
+                    renderX, renderY, 10, 
+                    renderX, renderY, blob.r + interactionBoost
+                );
+                
+                gradient.addColorStop(0, blob.color);
+                gradient.addColorStop(0.4, blob.color.replace(/[\d\.]+\)$/, '0.2)'));
+                gradient.addColorStop(0.8, blob.color.replace(/[\d\.]+\)$/, '0.05)'));
+                gradient.addColorStop(1, 'transparent');
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(renderX, renderY, blob.r + interactionBoost, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Revert configuration states safely
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.filter = 'none';
+
+            // --- PART 2: RENDER FIBONACCI SPACE AMBIENT DUST MATRIX ---
+            ctx.fillStyle = 'rgba(251, 248, 246, 0.25)';
+            for (let j = 0; j < 40; j++) {
+                let pAngle = (j * 137.5) * (Math.PI / 180);
+                let pRadius = ((timestamp * 0.012 + j * 18) % (Math.max(w, h) * 0.45)) * (1 + scrollVelocity * 0.08);
+                let px = (w / 2) + Math.cos(pAngle) * pRadius;
+                let py = (h / 2) + Math.sin(pAngle) * pRadius;
+                
+                if (px >= 0 && px <= w && py >= 0 && py <= h) {
+                    ctx.beginPath();
+                    ctx.arc(px, py, 0.55, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
         }
 
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.life -= 1;
-        const lifeRatio = Math.max(particle.life / particle.maxLife, 0);
-        const alpha = particle.alpha * lifeRatio;
+        /* --- INERTIA BASED HIGH FIDELITY LERP ENGINE FOR 1 BY 1 FLIGHT --- */
+        const layers = document.querySelectorAll('.lookbook-layer');
+        const totalLayers = layers.length;
 
-        if (particle.type === "smoke") {
-          const gradient = ctx.createRadialGradient(particle.x, particle.y, 0, particle.x, particle.y, particle.radius);
-          gradient.addColorStop(0, "rgba(255, 255, 255, " + alpha + ")");
-          gradient.addColorStop(0.44, "rgba(255, 107, 53, " + alpha * 0.42 + ")");
-          gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-          ctx.fill();
-        } else {
-          ctx.fillStyle = "rgba(" + particle.color + ", " + alpha + ")";
-          ctx.shadowColor = "rgba(" + particle.color + ", " + alpha + ")";
-          ctx.shadowBlur = 10;
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 0;
+        function operationalFrameLoop(timestamp) {
+            // Smoothly track pointer position coordinates
+            mouseX += (targetMouseX - mouseX) * 0.12;
+            mouseY += (targetMouseY - mouseY) * 0.12;
+            cursorBlur.style.left = mouseX + 'px';
+            cursorBlur.style.top = mouseY + 'px';
+
+            targetScrollY = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Capture exact velocity vector length
+            scrollVelocity = Math.abs(targetScrollY - currentScrollY);
+            
+            // 0.06 LERP factor builds exceptional anti-friction presentation glide mechanics
+            currentScrollY += (targetScrollY - currentScrollY) * 0.06;
+
+            const maxScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollFraction = maxScrollHeight > 0 ? currentScrollY / maxScrollHeight : 0;
+
+            // Render chromatic aura blobs
+            drawChromaticAurora(timestamp);
+
+            // Stagger discrete Z travel paths cleanly to execute 1-by-1 emergence out of backdrop mists
+            layers.forEach((layer, index) => {
+                const stepOffset = index / (totalLayers - 1);
+                const progress = scrollFraction - stepOffset;
+                
+                // Safe progressive translation path without center block restrictions
+                const zDepthValue = progress * 4600; 
+
+                if (zDepthValue > -1600 && zDepthValue < 600) {
+                    layer.classList.add('active');
+                    layer.style.transform = `translateZ(${zDepthValue}px)`;
+                    // Feather light smooth fade curve calculations
+                    layer.style.opacity = 1 - Math.abs(zDepthValue / 750);
+                } else {
+                    layer.classList.remove('active');
+                    layer.style.opacity = 0;
+                    layer.style.transform = `translateZ(-4600px)`;
+                }
+            });
+
+            requestAnimationFrame(operationalFrameLoop);
         }
 
-        if (particle.life <= 0 || particle.y < -80 || particle.x < -100 || particle.x > width + 100) {
-          particles[index] = createParticle(random(0, width), height + random(0, 80), Math.random() > 0.62 ? "spark" : "smoke");
-        }
-      }
+        /* --- IMMERSIVE INTERACTION MOUSE TILT PARALLAX VECTOR --- */
+        document.addEventListener('mousemove', (e) => {
+            const hTilt = (window.innerWidth / 2 - e.clientX) * 0.012;
+            const vTilt = (window.innerHeight / 2 - e.clientY) * 0.012;
+            
+            layers.forEach(layer => {
+                if (layer.classList.contains('active')) {
+                    const structuralNodes = layer.querySelectorAll('.matrix-grid-node, .matrix-footer-block');
+                    structuralNodes.forEach(node => {
+                        node.style.transform = `rotateY(${-hTilt}deg) rotateX(${vTilt}deg)`;
+                    });
+                }
+            });
+        });
 
-      function animate() {
-        ctx.clearRect(0, 0, width, height);
-        ctx.globalCompositeOperation = "lighter";
-        if (!prefersReduced && Math.random() > (coarse ? 0.88 : 0.78)) {
-          particles.push(createParticle(random(0, width), height + 30, "smoke"));
-        }
-        particles.forEach(drawParticle);
-        if (particles.length > (coarse ? 95 : 155)) {
-          particles.splice(0, particles.length - (coarse ? 95 : 155));
-        }
-        ctx.globalCompositeOperation = "source-over";
-        requestAnimationFrame(animate);
-      }
-
-      if (!prefersReduced) {
-        resizeCanvas();
-        seedParticles();
-        animate();
-      }
-    })();
-  </script>
+        // Initialize production stage pipeline
+        requestAnimationFrame(operationalFrameLoop);
+    </script>
 </body>
 </html>
