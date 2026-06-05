@@ -3,606 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shaama Luxury | 3D Multi-Axis Orbital Lookbook</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Plus+Jakarta+Sans:wght@200;300;400;600&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Professional High-Performance 3D CAD Viewer</title>
     <style>
         :root {
-            --bg-matte: #050103;
-            --gold-foil: linear-gradient(135deg, #F3E7C4 0%, #E5C07B 50%, #C29A4F 100%);
-            --gold-glow: #E5C07B;
-            --glass-card: rgba(12, 3, 7, 0.45);
-            --border-lux: rgba(229, 192, 123, 0.15);
+            --bg-color: #1a1a1a;
+            --panel-bg: rgba(30, 30, 30, 0.85);
+            --accent-color: #00bcd4;
+            --text-color: #ffffff;
+            --measure-color: #ffeb3b;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-user-select: none;
-            user-select: none;
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); }
+        #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+        
+        /* UI Control Panel */
+        #ui-panel {
+            position: absolute; top: 20px; left: 20px; z-index: 10;
+            background: var(--panel-bg); width: 320px; padding: 20px;
+            border-radius: 12px; border: 1px solid #444; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px); transition: all 0.3s ease;
         }
-
-        @media (pointer: fine) {
-            html, body { cursor: none; }
-            #custom-cursor {
-                position: fixed; width: 6px; height: 6px; background: var(--gold-glow);
-                border-radius: 50%; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%);
-            }
-            #custom-cursor-blur {
-                position: fixed; width: 36px; height: 36px; border: 1px solid rgba(229, 192, 123, 0.4);
-                border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
-                transition: transform 0.06s cubic-bezier(0.1, 1, 0.1, 1);
-            }
+        h3 { margin: 0 0 15px 0; color: var(--accent-color); font-size: 1.3rem; letter-spacing: 0.5px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        
+        /* Custom Upload Button */
+        .upload-btn {
+            display: block; background: linear-gradient(135deg, #0078d4, #005a9e); text-align: center;
+            padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,120,212,0.3); transition: transform 0.1s, background 0.2s;
         }
-
-        body {
-            background-color: var(--bg-matte);
-            color: #FBF8F6;
-            overflow-x: hidden;
-            height: 1100vh; /* Smooth sequential multi-scroll footprint */
+        .upload-btn:hover { background: linear-gradient(135deg, #0086f0, #0066b3); transform: translateY(-1px); }
+        .upload-btn:active { transform: translateY(1px); }
+        input[type="file"] { display: none; }
+        
+        /* Information & Status Panels */
+        .status-container { margin-bottom: 15px; font-size: 13px; background: #252525; padding: 10px; border-radius: 6px; border: 1px solid #333; }
+        .status-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .status-row:last-child { margin-bottom: 0; }
+        .label { color: #aaa; }
+        .value { font-weight: bold; color: #fff; }
+        
+        /* Measurement Display Box */
+        #measure-panel {
+            background: #2d2d2d; border-left: 4px solid var(--measure-color);
+            padding: 12px; margin-top: 15px; border-radius: 0 6px 6px 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
-
-        /* --- STAGE VIEWPORT --- */
-        .stage-viewport {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            perspective: 1800px; /* Strong 3D convergence perspective factor */
-            overflow: hidden;
-            z-index: 1;
+        #distance-title { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+        #distance-display { font-size: 24px; font-weight: 700; color: var(--measure-color); margin: 5px 0; font-family: monospace; }
+        .instructions { font-size: 11px; color: #bbb; line-height: 1.4; }
+        
+        /* Loading Overlay Spinner */
+        #loading-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15,15,15,0.8); z-index: 100; justify-content: center; align-items: center;
+            flex-direction: column; backdrop-filter: blur(5px);
         }
-
-        /* --- CHROMATIC MIST BACKGROUND CANVAS (STAYS FIXED) --- */
-        #auroraCanvas {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -2;
-            background: #050103;
-            pointer-events: none;
-        }
-
-        /* --- NAVIGATION HEADER --- */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(5, 1, 3, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(229, 192, 123, 0.08);
-            z-index: 1000;
-            padding: 16px 6%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-main {
-            font-family: 'Cinzel', serif;
-            font-size: 20px;
-            font-weight: 800;
-            background: var(--gold-foil);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
-
-        .logo-sub {
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: rgba(251, 248, 246, 0.5);
-            margin-top: 2px;
-            display: block;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: rgba(251, 248, 246, 0.7);
-            margin-left: 24px;
-            font-size: 11px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        @media(max-width: 768px) {
-            nav { display: none; }
-            .logo-main { font-size: 18px; }
-        }
-
-        /* --- ISOLATED 3D SPACE CHANNELS --- */
-        .lookbook-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform-style: preserve-3d;
-            opacity: 0;
-            pointer-events: none;
-            will-change: transform, opacity;
-        }
-
-        .lookbook-layer.active {
-            pointer-events: auto;
-            opacity: 1;
-        }
-
-        /* Adaptive Symmetric Node Shell */
-        .matrix-grid-node {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 40px;
-            width: 85%;
-            max-width: 1200px;
-            align-items: center;
-            transform-style: preserve-3d;
-        }
-
-        /* --- RADICAL SEPARATED COMPONENTS WITH X, Y, Z ORBITS --- */
-        .image-3d-frame {
-            position: relative;
-            transform-style: preserve-3d;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            will-change: transform;
-        }
-
-        /* Isolated Cloth Component with Extra Forward Depth */
-        .cloth-mock-img {
-            width: 80%;
-            max-width: 380px;
-            height: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 35px 60px rgba(0,0,0,0.9));
-            /* Multi-Axis Separation Rule */
-            transform: translateZ(280px); 
-            will-change: transform;
-            transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
-        }
-
-        /* Glass Text Component with Base Depth */
-        .item-desc-card {
-            background: var(--glass-card);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border-lux);
-            padding: 45px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            transform: translateZ(100px);
-            will-change: transform;
-            transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
-        }
-
-        /* Perfect Mobile Grid Adjustments */
-        @media(max-width: 1024px) {
-            .matrix-grid-node {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                width: 90%;
-                max-width: 420px;
-                text-align: center;
-            }
-            .cloth-mock-img {
-                width: 65%;
-                max-width: 220px;
-                transform: translateZ(140px);
-            }
-            .item-desc-card {
-                padding: 25px;
-                transform: translateZ(50px);
-            }
-        }
-
-        /* Inner Content Typography */
-        .item-tag {
-            font-family: 'Cinzel', serif;
-            font-size: 11px;
-            color: var(--gold-glow);
-            letter-spacing: 2px;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .item-title {
-            font-family: 'Cinzel', serif;
-            font-size: 26px;
-            color: #FFF;
-            margin-bottom: 12px;
-            font-weight: 400;
-            letter-spacing: 1px;
-        }
-
-        .item-desc-text {
-            font-size: 13px;
-            line-height: 1.7;
-            color: rgba(251, 248, 246, 0.7);
-            margin-bottom: 25px;
-            font-weight: 300;
-        }
-
-        .btn-lux-whatsapp {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: var(--gold-foil);
-            color: #050103;
-            text-decoration: none;
-            padding: 12px 26px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-size: 11px;
-        }
-
-        /* --- FIXED PRESENTATION FOOTER BLOCK --- */
-        .matrix-footer-block {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            width: 85%;
-            background: rgba(5, 1, 3, 0.95);
-            padding: 40px;
-            border: 1px solid var(--border-lux);
-            transform: translateZ(30px);
-        }
-
-        .footer-col h4 { font-family: 'Cinzel', serif; color: #FFF; font-size: 14px; margin-bottom: 12px; }
-        .footer-col p { font-size: 12px; color: rgba(251, 248, 246, 0.55); line-height: 1.6; }
-
-        @media(max-width: 768px) {
-            .matrix-footer-block { grid-template-columns: 1fr; gap: 20px; padding: 25px; text-align: center; }
-        }
+        .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top: 5px solid var(--accent-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        #progress-text { margin-top: 20px; font-weight: bold; font-size: 16px; color: #fff; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/occt-import-js@0.0.12/dist/occt-import-js.js"></script>
 </head>
 <body>
 
-    <div id="custom-cursor"></div>
-    <div id="custom-cursor-blur"></div>
-
-    <div class="stage-viewport">
-        
-        <canvas id="auroraCanvas"></canvas>
-
-        <header>
-            <div class="logo-group">
-                <span class="logo-main">Shaama Luxury</span>
-                <span class="logo-sub">3D X-Y-Z Orbital System</span>
-            </div>
-            <nav>
-                <a href="#">Atmosphere</a>
-                <a href="#">Collection</a>
-                <a href="#">Identity</a>
-            </nav>
-        </header>
-
-        <div class="lookbook-layer active">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80" alt="Item 1">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">01 / Masterpiece Collection</span>
-                    <h2 class="item-title">Navy Cashmere Overcoat</h2>
-                    <p class="item-desc-text">Premium architectural structured draping featuring signature inner gold-piped lining and heavy high-density winter insulation.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=600&q=80" alt="Item 2">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">02 / Couture Special</span>
-                    <h2 class="item-title">Burgundy Velvet Dress</h2>
-                    <p class="item-desc-text">Intricate hand-finished golden lace thread embroidery laid over heavy Royal velvet fabrics, tailored specifically for grand atmospheres.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80" alt="Item 3">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">03 / Corporate Elite</span>
-                    <h2 class="item-title">Italian Tweed Suit</h2>
-                    <p class="item-desc-text">Sharp dual-button blazer and slim-fit trouser set meticulously crafted from premium breathable lightweight Italian wool loops.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80" alt="Item 4">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">04 / Heritage Capsule</span>
-                    <h2 class="item-title">Royal Silk Sherwani</h2>
-                    <p class="item-desc-text">Celebrating regional excellence with heavy textured Banarasi silk bases, self-on-self patterns, and authentic handcrafted metallic button arrays.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=600&q=80" alt="Item 5">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">05 / Casual Resort</span>
-                    <h2 class="item-title">Ivory Linen Jacket</h2>
-                    <p class="item-desc-text">Unstructured natural linen build featuring soft shoulder drops and raw horn buttons. High-density weave offering cool air-circulation matrices.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=600&q=80" alt="Item 6">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">06 / Urban Avant-Garde</span>
-                    <h2 class="item-title">Leather Bomber Jacket</h2>
-                    <p class="item-desc-text">Ultra-luxulent full grain calfskin leather manually burnished into deep warm tan tones. Heavy-duty steel zip tracks with padded inner lining meshes.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=600&q=80" alt="Item 7">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">07 / Minimalist Knitwear</span>
-                    <h2 class="item-title">Pure Cashmere Pullover</h2>
-                    <p class="item-desc-text">Spun from 100% fine Inner-Mongolian cashmere wool loops. Incredibly soft texture profile matching clean minimalist body contours perfectly.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?auto=format&fit=crop&w=600&q=80" alt="Item 8">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">08 / Indigo Craft</span>
-                    <h2 class="item-title">Selvedge Denim Shirt</h2>
-                    <p class="item-desc-text">Shuttle-loomed dark indigo denim featuring classic gold-thread contrast topstitches and authentic Mother of Pearl fastening buttons.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1566207274740-0f8cf6b7d5a5?auto=format&fit=crop&w=600&q=80" alt="Item 9">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">09 / Heirloom Weaves</span>
-                    <h2 class="item-title">Kanjivaram Silk Saree</h2>
-                    <p class="item-desc-text">Interwoven with pure silver zari threads plated in genuine 24k gold. A traditional royal aesthetic footprint reimagined into fashion formats.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer">
-            <div class="matrix-grid-node">
-                <div class="image-3d-frame">
-                    <img class="cloth-mock-img" src="https://images.unsplash.com/photo-1593032465175-481da7e4725f?auto=format&fit=crop&w=600&q=80" alt="Item 10">
-                </div>
-                <div class="item-desc-card">
-                    <span class="item-tag">10 / Power Sartorial</span>
-                    <h2 class="item-title">Pinstripe Suit Masterpiece</h2>
-                    <p class="item-desc-text">The ultimate tailoring crest statement. Sharp peak lapels, balanced pinstripe geometries, and structured canvas build providing posture alignment.</p>
-                    <a href="https://wa.me/9155185346" class="btn-lux-whatsapp"><i class="fa-brands fa-whatsapp"></i> Inquiry</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="lookbook-layer" id="footerStage">
-            <div class="matrix-footer-block">
-                <div class="footer-col">
-                    <h4>Maison Shaama</h4>
-                    <p>An elite digital tailor house focusing on highly sophisticated draping, heavy custom insulation builds, and globally hand-picked fabrications.</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Direct Contours</h4>
-                    <p><i class="fa-solid fa-phone"></i> Direct Line: 44437244</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Official Blueprint</h4>
-                    <p>&copy; 2026 SHAAMA LUXURY. OMNI-DIRECTIONAL ENGINE.</p>
-                </div>
-            </div>
-        </div>
-
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="progress-text">Processing CAD Geometry...</div>
     </div>
 
+    <div id="ui-panel">
+        <h3>⚡ Ultra CAD Engine</h3>
+        <label class="upload-btn">
+            📁 Upload STEP / STP / DXF
+            <input type="file" id="cad-file-uploader" accept=".step,.stp,.dxf">
+        </label>
+        
+        <div class="status-container">
+            <div class="status-row"><span class="label">File Name:</span><span class="value" id="file-name">-</span></div>
+            <div class="status-row"><span class="label">Size:</span><span class="value" id="file-size">-</span></div>
+            <div class="status-row"><span class="label">Status:</span><span class="value" id="engine-status" style="color: #4caf50;">Engine Ready</span></div>
+        </div>
+
+        <div id="measure-panel">
+            <div id="distance-title">📏 Calibrated Distance</div>
+            <div id="distance-display">0.000 mm</div>
+            <div class="instructions">
+                • <b>Rotate/Pan:</b> Mouse Left/Right Click + Drag<br>
+                • <b>Measure:</b> Click point A, then click point B. (3rd click resets auto).
+            </div>
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
     <script>
-        /* --- DESKTOP CUSTOM POINTER METER --- */
-        const cursor = document.getElementById('custom-cursor');
-        const cursorBlur = document.getElementById('custom-cursor-blur');
-        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-        let targetMouseX = mouseX, targetMouseY = mouseY;
+        // --- 1. Advanced Core Engine Architecture & Scene Setup ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x202020);
 
-        if(cursor && cursorBlur) {
-            document.addEventListener('mousemove', (e) => {
-                targetMouseX = e.clientX; targetMouseY = e.clientY;
-                cursor.style.left = targetMouseX + 'px'; cursor.style.top = targetMouseY + 'px';
-            });
-        }
+        // Anti-aliased Super-Sampling Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Dynamic capping for 4k performance smoothness
+        renderer.shadowMap.enabled = true;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
+        container.appendChild(renderer.domElement);
 
-        /* --- PRECISE LIQUID BACKDROP GENERATOR --- */
-        const canvas = document.getElementById('auroraCanvas');
-        const ctx = canvas.getContext('2d');
-        let w = canvas.width = window.innerWidth;
-        let h = canvas.height = window.innerHeight;
+        // Grid Plane Setup (CAD Environment style)
+        const grid = new THREE.GridHelper(500, 100, 0x444444, 0x2b2b2b);
+        grid.rotation.x = Math.PI / 2;
+        scene.add(grid);
 
-        window.addEventListener('resize', () => {
-            w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight;
+        // Professional Perspective Lens Calibration
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.5, 5000);
+        camera.position.set(200, 200, 250);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxDistance = 2000;
+        controls.minDistance = 2;
+
+        // Studio Grade High-Dynamic-Range Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight1.position.set(1, 1, 1).normalize();
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0x90caf9, 0.4); // Subtle bluish ambient bounce
+        dirLight2.position.set(-1, -1, 0.5).normalize();
+        scene.add(dirLight2);
+
+        // Memory Registries
+        let cadMasterGroup = new THREE.Group();
+        scene.add(cadMasterGroup);
+
+        let measurePointsRegistry = [];
+        let visualMarkersRegistry = [];
+        let runtimeMeasurementLine = null;
+
+        // Max File Threshold: 200 Megabytes
+        const MAX_FILE_SIZE_BYTES = 200 * 1024 * 1024; 
+
+        // --- 2. High-Capacity Multi-Format Loader Pipeline ---
+        document.getElementById('cad-file-uploader').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Security Validation Check: 200MB Constraint limit
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                alert(`File size exceeds 200MB limit. Current file size: ${(file.size / (1024 * 1024)).toFixed(1)}MB`);
+                this.value = ''; // Flush input stream
+                return;
+            }
+
+            // Update DOM Panel State
+            document.getElementById('file-name').innerText = file.name.length > 18 ? file.name.substring(0, 15) + '...' : file.name;
+            document.getElementById('file-size').innerText = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+            document.getElementById('engine-status').innerText = "Processing...";
+            document.getElementById('engine-status').style.color = "#ff9800";
+            document.getElementById('loading-overlay').style.display = "flex";
+            document.getElementById('progress-text').innerText = `Unpacking ${file.name} to memory module...`;
+
+            // Memory Flush previous mesh nodes to eliminate leak vulnerabilities
+            flushEngineMemoryMemory();
+
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                try {
+                    const arrayBuffer = event.target.result;
+                    const uint8Array = new Uint8Array(arrayBuffer);
+
+                    document.getElementById('progress-text').innerText = "Executing WebAssembly OpenCASCADE Core Engine Engine...";
+                    
+                    // Fire Up Assembly Compiler Instance
+                    const occtContext = await occtimportjs();
+                    const parseOutput = occtContext.ReadStepOrDxf(uint8Array, file.name);
+
+                    if (!parseOutput || !parseOutput.success) {
+                        throw new Error("Target file structural formatting error or file corrupted.");
+                    }
+
+                    document.getElementById('progress-text').innerText = "Generating Smooth Realistic Industrial Textures...";
+
+                    // Build ThreeJS Scene Meshes natively inside browser
+                    parseOutput.parts.forEach(part => {
+                        const bufferGeom = new THREE.BufferGeometry();
+                        
+                        // Structural Geometry Binding
+                        bufferGeom.setAttribute('position', new THREE.Float32BufferAttribute(part.mesh.attributes.position.array, 3));
+                        
+                        if(part.mesh.attributes.normal) {
+                            bufferGeom.setAttribute('normal', new THREE.Float32BufferAttribute(part.mesh.attributes.normal.array, 3));
+                        } else {
+                            bufferGeom.computeVertexNormals();
+                        }
+
+                        if(part.mesh.index) {
+                            bufferGeom.setIndex(new THREE.BufferAttribute(new Uint32Array(part.mesh.index.array), 1));
+                        }
+
+                        // Premium Steel Coating Shader Node logic (Auto Extracts color metadata if embedded)
+                        const partColorHex = part.color ? 
+                            new THREE.Color(`rgb(${Math.round(part.color[0]*255)}, ${Math.round(part.color[1]*255)}, ${Math.round(part.color[2]*255)})`) : 
+                            new THREE.Color('#b0bec5');
+
+                        const precisionIndustrialMaterial = new THREE.MeshStandardMaterial({
+                            color: partColorHex,
+                            roughness: 0.18, // Ultra realistic light glare reflection
+                            metalness: 0.75, // Chrome steel finishing aesthetics
+                            side: THREE.DoubleSide
+                        });
+
+                        const meshInstance = new THREE.Mesh(bufferGeom, precisionIndustrialMaterial);
+                        cadMasterGroup.add(meshInstance);
+                    });
+
+                    // Auto Adaptive Matrix Centering Engine
+                    const structuralBoundBox = new THREE.Box3().setFromObject(cadMasterGroup);
+                    const geometryCenterVector = new THREE.Vector3();
+                    structuralBoundBox.getCenter(geometryCenterVector);
+                    cadMasterGroup.position.sub(geometryCenterVector); // Offset shift directly into system center origin
+
+                    // Macro Scale Dynamic Zoom Tuning Engine
+                    const dimensions = structuralBoundBox.getSize(new THREE.Vector3());
+                    const majorAxisDim = Math.max(dimensions.x, dimensions.y, dimensions.z);
+                    
+                    camera.position.set(majorAxisDim * 1.4, majorAxisDim * 1.4, majorAxisDim * 1.4);
+                    controls.target.set(0, 0, 0);
+                    controls.update();
+
+                    document.getElementById('engine-status').innerText = "Render Smooth";
+                    document.getElementById('engine-status').style.color = "#4caf50";
+
+                } catch (runtimeException) {
+                    console.error(runtimeException);
+                    alert("Processing Error: File execution failed. Ensure it is uncorrupted.");
+                    document.getElementById('engine-status').innerText = "Execution Broken";
+                    document.getElementById('engine-status').style.color = "#f44336";
+                } finally {
+                    document.getElementById('loading-overlay').style.display = "none";
+                }
+            };
+            reader.readAsArrayBuffer(file);
         });
 
-        const blobs = [
-            { x: w * 0.3, y: h * 0.4, r: 250, color: 'rgba(139, 0, 50, 0.45)', seed: 0 },
-            { x: w * 0.7, y: h * 0.6, r: 290, color: 'rgba(229, 192, 123, 0.35)', seed: 5 },
-            { x: w * 0.5, y: h * 0.3, r: 230, color: 'rgba(37, 211, 102, 0.22)', seed: 12 }
-        ];
+        // --- 3. Ultra-Fast Precision Surface Raycaster Measurement System ---
+        const mathematicalRaycaster = new THREE.Raycaster();
+        const screenMouseCoordinate = new THREE.Vector2();
 
-        function renderStaticAuroraMist() {
-            ctx.fillStyle = '#050103';
-            ctx.fillRect(0, 0, w, h);
-            ctx.globalCompositeOperation = 'screen';
-            ctx.filter = 'blur(90px)';
+        window.addEventListener('pointerdown', function(mouseClickEvent) {
+            // Filter click events safely away from Control Panel Interfaces bounding coordinates
+            if (mouseClickEvent.clientX < 360 && mouseClickEvent.clientY < 320) return;
 
-            blobs.forEach((blob) => {
-                blob.seed += 0.0015;
-                let driftX = Math.sin(blob.seed) * 40;
-                let driftY = Math.cos(blob.seed) * 40;
-                let rx = (blob.x + driftX + w) % w;
-                let ry = (blob.y + driftY + h) % h;
+            // Mapping 2D Pixel Screens coordinates to standard cartesian 3D Matrix WebGL planes
+            screenMouseCoordinate.x = (mouseClickEvent.clientX / window.innerWidth) * 2 - 1;
+            screenMouseCoordinate.y = -(mouseClickEvent.clientY / window.innerHeight) * 2 + 1;
 
-                let gradient = ctx.createRadialGradient(rx, ry, 10, rx, ry, blob.r);
-                gradient.addColorStop(0, blob.color);
-                gradient.addColorStop(0.6, 'transparent');
+            mathematicalRaycaster.setFromCamera(screenMouseCoordinate, camera);
+            const intersectionsGroup = mathematicalRaycaster.intersectObjects(cadMasterGroup.children, true);
 
-                ctx.fillStyle = gradient;
-                ctx.beginPath(); ctx.arc(rx, ry, blob.r, 0, Math.PI * 2); ctx.fill();
-            });
+            if (intersectionsGroup.length > 0) {
+                const specificSurfaceHitPoint = intersectionsGroup[0].point;
 
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.filter = 'none';
-        }
-
-        /* --- THE COMPREHENSIVE 3D OMNI-DIRECTIONAL (X, Y, Z) SCROLL ENGINE --- */
-        const layers = document.querySelectorAll('.lookbook-layer');
-        const totalLayers = layers.length;
-        let currentScrollY = 0, targetScrollY = 0;
-
-        function animationPipelineLoop(timestamp) {
-            // Smooth pointer mapping
-            mouseX += (targetMouseX - mouseX) * 0.12;
-            mouseY += (targetMouseY - mouseY) * 0.12;
-            if(cursorBlur) { cursorBlur.style.left = mouseX + 'px'; cursorBlur.style.top = mouseY + 'px'; }
-
-            // Fetch high precision scroll values
-            targetScrollY = window.pageYOffset || document.documentElement.scrollTop;
-            currentScrollY += (targetScrollY - currentScrollY) * 0.06; // Fine-tuned inertia 
-
-            const maxScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollFraction = maxScrollHeight > 0 ? currentScrollY / maxScrollHeight : 0;
-
-            // Render background mist (remains locked seamlessly behind)
-            renderStaticAuroraMist();
-
-            // Run complex trigonometric spatial mapping for X, Y, Z multi-axis movement
-            layers.forEach((layer, index) => {
-                const stepOffset = index / (totalLayers - 1);
-                const progress = scrollFraction - stepOffset;
-                
-                // 1. Z-AXIS DEPTH: Brings clothes forward smoothly
-                const zDepthValue = progress * 4600; 
-
-                // Isolate components inside active viewport threshold bounds
-                if (zDepthValue > -1600 && zDepthValue < 600) {
-                    layer.classList.add('active');
-                    
-                    // 2. X-AXIS OFFSET: Pushes elements laterally in alternate curves as they approach
-                    const xTranslation = Math.sin(progress * Math.PI) * (index % 2 === 0 ? 150 : -150);
-                    
-                    // 3. Y-AXIS OFFSET: Elevates clothes upward vertically during transition space
-                    const yTranslation = progress * -800;
-
-                    // 4. COMBINED ORBIT ROTATION MATRICES (X & Y Rotations calculated dynamic on scroll)
-                    const xRotation = progress * -45; // Subtle pitch twist
-                    const yRotation = progress * (index % 2 === 0 ? 35 : -35); // Yaw twist
-
-                    // Inject the combined multi-axis matrix vectors cleanly into the DOM node stream
-                    layer.style.transform = `
-                        translateX(${xTranslation}px) 
-                        translateY(${yTranslation}px) 
-                        translateZ(${zDepthValue}px)
-                        rotateX(${xRotation}deg)
-                        rotateY(${yRotation}deg)
-                    `;
-                    
-                    // Feather light fading opacity curve mapping
-                    layer.style.opacity = 1 - Math.abs(zDepthValue / 750);
-                } else {
-                    layer.classList.remove('active');
-                    layer.style.opacity = 0;
-                    layer.style.transform = `translateZ(-4600px)`;
+                // Safe State Machine Reset Routine if 3rd execution point is flagged
+                if (measurePointsRegistry.length >= 2) {
+                    clearActiveMeasurements();
                 }
-            });
 
-            requestAnimationFrame(animationPipelineLoop);
-        }
+                measurePointsRegistry.push(specificSurfaceHitPoint);
 
-        /* --- SEPARATED DEVICE-LEVEL INERTIAL TILT CONTROL PARALLAX --- */
-        function applyTiltParallax(clientX, clientY) {
-            const hTilt = (window.innerWidth / 2 - clientX) * 0.012;
-            const vTilt = (window.innerHeight / 2 - clientY) * 0.012;
-            
-            layers.forEach(layer => {
-                if (layer.classList.contains('active')) {
-                    const cloth = layer.querySelector('.cloth-mock-img');
-                    const card = layer.querySelector('.item-desc-card');
-                    const footer = layer.querySelector('.matrix-footer-block');
+                // High Visibility Laser Nodes deployment on surface coordinate geometry
+                const markerNodeGeometry = new THREE.SphereGeometry(majorDimensionScanner() * 0.008 || 1.2, 16, 16);
+                const markerNodeMaterial = new THREE.MeshBasicMaterial({ color: 0xffeb3b, depthTest: false, transparent: true, opacity: 0.9 });
+                const visualMarkerMesh = new THREE.Mesh(markerNodeGeometry, markerNodeMaterial);
+                visualMarkerMesh.position.copy(specificSurfaceHitPoint);
+                scene.add(visualMarkerMesh);
+                visualMarkersRegistry.push(visualMarkerMesh);
 
-                    // Layered depth feedback loops inside current transformations
-                    if (cloth) cloth.style.transform = `translateZ(280px) rotateY(${-hTilt * 1.8}deg) rotateX(${vTilt * 1.8}deg)`;
-                    if (card) card.style.transform = `translateZ(100px) rotateY(${-hTilt * 0.8}deg) rotateX(${vTilt * 0.8}deg)`;
-                    if (footer) footer.style.transform = `translateZ(30px) rotateY(${-hTilt * 0.5}deg) rotateX(${vTilt * 0.5}deg)`;
+                // Compute exact Euclidean matrix tracking vector points distance separation 
+                if (measurePointsRegistry.length === 2) {
+                    const finalCalculatedDistance = measurePointsRegistry[0].distanceTo(measurePointsRegistry[1]);
+                    document.getElementById('distance-display').innerText = `${finalCalculatedDistance.toFixed(3)} mm`;
+
+                    // Deploy dynamic direct visual laser connection vector string
+                    const dynamicLaserPathGeometry = new THREE.BufferGeometry().setFromPoints([measurePointsRegistry[0], measurePointsRegistry[1]]);
+                    const dynamicLaserMaterial = new THREE.LineBasicMaterial({ color: 0xffeb3b, linewidth: 4, depthTest: false });
+                    runtimeMeasurementLine = new THREE.Line(dynamicLaserPathGeometry, dynamicLaserMaterial);
+                    scene.add(runtimeMeasurementLine);
                 }
-            });
-        }
-
-        // Desktop move integration
-        document.addEventListener('mousemove', (e) => applyTiltParallax(e.clientX, e.clientY));
-        
-        // Mobile touch integration
-        document.addEventListener('touchmove', (e) => {
-            if(e.touches.length > 0) {
-                applyTiltParallax(e.touches[0].clientX, e.touches[0].clientY);
             }
-        }, { passive: true });
+        });
 
-        // Trigger loop pipeline
-        requestAnimationFrame(animationPipelineLoop);
+        // Helper tracking module to auto adjust measurement point sizes dynamically based on 3D Scale
+        function majorDimensionScanner() {
+            const tempBox = new THREE.Box3().setFromObject(cadMasterGroup);
+            const tempSize = tempBox.getSize(new THREE.Vector3());
+            return Math.max(tempSize.x, tempSize.y, tempSize.z);
+        }
+
+        function clearActiveMeasurements() {
+            measurePointsRegistry = [];
+            visualMarkersRegistry.forEach(node => scene.remove(node));
+            visualMarkersRegistry = [];
+            if (runtimeMeasurementLine) {
+                scene.remove(runtimeMeasurementLine);
+                runtimeMeasurementLine = null;
+            }
+            document.getElementById('distance-display').innerText = "0.000 mm";
+        }
+
+        function flushEngineMemoryMemory() {
+            clearActiveMeasurements();
+            while(cadMasterGroup.children.length > 0) {
+                const nodeObject = cadMasterGroup.children[0];
+                nodeObject.geometry.dispose();
+                if(Array.isArray(nodeObject.material)) {
+                    nodeObject.material.forEach(m => m.dispose());
+                } else {
+                    nodeObject.material.dispose();
+                }
+                cadMasterGroup.remove(nodeObject);
+            }
+        }
+
+        // --- 4. Synchronized Performance Rendering Engine loop & Resize Drivers ---
+        function coreRenderingLoop() {
+            requestAnimationFrame(coreRenderingLoop);
+            controls.update(); // Smooth damp mechanics tracking engine execution
+            renderer.render(scene, camera);
+        }
+        coreRenderingLoop();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
