@@ -3,389 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Stable 3D CAD System</title>
+    <title>Enterprise Precision 3D CAD Workstation</title>
     <style>
         :root {
             --bg-color: #121212;
-            --panel-bg: rgba(28, 28, 28, 0.95);
-            --neon-blue: #00e5ff;
+            --panel-bg: rgba(24, 24, 24, 0.95);
+            --accent-blue: #00e5ff;
             --laser-yellow: #ffeb3b;
-            --gray-border: #333333;
+            --border: #2d2d2d;
         }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg-color); color: #ffffff; user-select: none; }
-        #viewport-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: #ffffff; user-select: none; }
+        #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
         
-        /* Premium Dashboard Panel */
-        #control-dashboard {
+        /* Premium Floating Dashboard Panel */
+        #control-panel {
             position: absolute; top: 20px; left: 20px; z-index: 10;
-            background: var(--panel-bg); width: 330px; padding: 20px;
-            border-radius: 12px; border: 1px solid var(--gray-border);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            background: var(--panel-bg); width: 320px; padding: 20px;
+            border-radius: 12px; border: 1px solid var(--border);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); backdrop-filter: blur(10px);
         }
-        h3 { margin: 0 0 15px 0; color: var(--neon-blue); font-size: 1.2rem; letter-spacing: 0.5px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        h3 { margin: 0 0 15px 0; color: var(--accent-blue); font-size: 1.2rem; letter-spacing: 0.5px; border-bottom: 2px solid #222; padding-bottom: 10px; }
         
         .upload-trigger {
             display: block; background: linear-gradient(135deg, #0078d4, #005a9e); text-align: center;
             padding: 12px; border-radius: 6px; cursor: pointer; font-weight: 700; margin-bottom: 15px;
-            transition: all 0.2s ease; border: 1px solid #0086f0;
+            box-shadow: 0 4px 15px rgba(0,120,212,0.3); transition: all 0.2s ease; border: 1px solid #0086f0;
         }
         .upload-trigger:hover { background: linear-gradient(135deg, #0086f0, #0066b3); }
         input[type="file"] { display: none; }
         
         .telemetry-box { margin-bottom: 15px; font-size: 13px; background: #1a1a1a; padding: 12px; border-radius: 6px; border: 1px solid #252525; }
-        .telemetry-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .telemetry-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
         .lbl { color: #888; }
         .val { font-weight: 700; color: #fff; font-family: monospace; }
         
-        #measurement-deck {
+        #measure-deck {
             background: #222222; border-left: 4px solid var(--laser-yellow);
-            padding: 12px; border-radius: 0 6px 6px 0;
+            padding: 12px; border-radius: 0 6px 6px 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
         }
         .measure-title { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; }
-        #realtime-distance { font-size: 26px; font-weight: 700; color: var(--laser-yellow); margin: 5px 0; font-family: monospace; }
-        .help-text { font-size: 11px; color: #aaa; line-height: 1.4; }
+        #distance-display { font-size: 26px; font-weight: 700; color: var(--laser-yellow); margin: 5px 0; font-family: monospace; }
+        .help-text { font-size: 11px; color: #b0bec5; line-height: 1.5; }
         
-        /* Fullscreen Safe Loader Shield */
-        #processing-shield {
+        /* Dedicated Processing Shield Layer */
+        #shield-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10,10,10,0.9); z-index: 100; justify-content: center; align-items: center;
-            flex-direction: column; backdrop-filter: blur(5px);
+            background: rgba(10,10,10,0.92); z-index: 100; justify-content: center; align-items: center;
+            flex-direction: column; backdrop-filter: blur(6px);
         }
-        .loader-ring { width: 50px; height: 50px; border: 4px solid #222; border-top: 4px solid var(--neon-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        #shield-text { margin-top: 20px; font-weight: 600; font-size: 15px; color: #fff; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .spinner-ring { width: 50px; height: 50px; border: 4px solid #222; border-top: 4px solid var(--accent-blue); border-radius: 50%; animation: spin-loop 0.8s linear infinite; }
+        #shield-message { margin-top: 20px; font-weight: 600; font-size: 15px; color: #fff; letter-spacing: 0.5px; }
+        @keyframes spin-loop { 0% { transform: rotate(0deg); } 100% { transform: rotate(3600deg); } }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/occt-import-js@0.0.12/dist/occt-import-js.js"></script>
 </head>
 <body>
 
-    <div id="processing-shield">
-        <div class="loader-ring"></div>
-        <div id="shield-text">Streaming CAD Datastream Natively...</div>
+    <div id="shield-overlay">
+        <div class="spinner-ring"></div>
+        <div id="shield-message">Compiling CAD Assemblies Natively...</div>
     </div>
 
-    <div id="control-dashboard">
+    <div id="control-panel">
         <h3>⚡ Ultra CAD Engine</h3>
         <label class="upload-trigger">
-            📂 Open File (STEP / STP / DXF)
-            <input type="file" id="cad-file-handler" accept=".step,.stp,.dxf,.stl">
+            📂 Open Model (STEP / STP / DXF)
+            <input type="file" id="cad-file-input" accept=".step,.stp,.dxf">
         </label>
         
         <div class="telemetry-box">
-            <div class="telemetry-row"><span class="lbl">File Descriptor:</span><span class="val" id="file-name">-</span></div>
-            <div class="telemetry-row"><span class="lbl">Data Weight:</span><span class="val" id="file-size">-</span></div>
-            <div class="telemetry-row"><span class="lbl">Engine Status:</span><span class="val" id="engine-status" style="color: #4caf50;">Ready</span></div>
+            <div class="telemetry-row"><span class="lbl">File Name:</span><span class="val" id="meta-name">-</span></div>
+            <div class="telemetry-row"><span class="lbl">File Size:</span><span class="val" id="meta-size">-</span></div>
+            <div class="telemetry-row"><span class="lbl">Engine Status:</span><span class="val" id="engine-status" style="color: #4caf50;">Engine Online</span></div>
         </div>
 
-        <div id="measurement-deck">
-            <div class="measure-title">📏 Verified Vector Distance</div>
-            <div id="realtime-distance">0.000 mm</div>
+        <div id="measure-deck">
+            <div class="measure-title">📏 Calibrated Distance</div>
+            <div id="distance-display">0.000 mm</div>
             <div class="help-text">
-                • <b>Rotate/Pan:</b> Mouse Drag (Left/Right Click)<br>
-                • <b>Measurement Tool:</b> Model par kisi bhi pehle point par click karein (Point A) aur fir dusre point par (Point B). Exact linear distance millimetre me aa jayega.
+                • <b>Rotate View:</b> Mouse Left Click + Drag<br>
+                • <b>Pan Scene:</b> Mouse Right Click + Drag<br>
+                • <b>Easy Measurement:</b> Model par pehla click karein aur fir dusra click karein. Yellow laser line ke sath exact naap instantly mil jayega.
             </div>
         </div>
     </div>
 
-    <div id="viewport-container"></div>
+    <div id="canvas-container"></div>
 
     <script>
-        // --- 1. Viewport Kernel Initialization ---
-        const container = document.getElementById('viewport-container');
-        const mainScene = new THREE.Scene();
-        mainScene.background = new THREE.Color(0x161616);
+        // --- 1. Viewport Lab Initialization ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a1a);
 
-        const mainRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
-        mainRenderer.setSize(window.innerWidth, window.innerHeight);
-        mainRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        mainRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-        mainRenderer.toneMappingExposure = 1.2;
-        container.appendChild(mainRenderer.domElement);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        container.appendChild(renderer.domElement);
 
-        // CAD Blueprint Grid Environment
-        const gridSystem = new THREE.GridHelper(1000, 200, 0x3a3a3a, 0x222222);
+        // Standard Industrial Grid Matrix
+        const gridSystem = new THREE.GridHelper(800, 160, 0x444444, 0x242424);
         gridSystem.rotation.x = Math.PI / 2;
-        mainScene.add(gridSystem);
+        scene.add(gridSystem);
 
-        const mainCamera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 30000);
-        mainCamera.position.set(200, 200, 300);
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 50000);
+        camera.position.set(250, 250, 350);
 
-        const cameraControls = new THREE.OrbitControls(mainCamera, mainRenderer.domElement);
-        cameraControls.enableDamping = true;
-        cameraControls.dampingFactor = 0.05;
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
 
-        // Realistic Studio Lighting Module
-        mainScene.add(new THREE.HemisphereLight(0xffffff, 0x333333, 0.7));
-        const skyLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        skyLight.position.set(100, 200, 100);
-        mainScene.add(skyLight);
-        const groundBounceLight = new THREE.DirectionalLight(0x00e5ff, 0.2);
-        groundBounceLight.position.set(-100, -200, -100);
-        mainScene.add(groundBounceLight);
+        // Multi-Directional Industrial Lights Nodes
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x222222, 0.6));
+        const studioLightA = new THREE.DirectionalLight(0xffffff, 0.8);
+        studioLightA.position.set(150, 250, 150);
+        scene.add(studioLightA);
+        const studioLightB = new THREE.DirectionalLight(0x90caf9, 0.3);
+        studioLightB.position.set(-150, -250, -150);
+        scene.add(studioLightB);
 
-        // Data Storage Pools
-        let masterGeometryGroup = new THREE.Group();
-        mainScene.add(masterGeometryGroup);
+        // Core Allocation Registries
+        let cadMasterGroup = new THREE.Group();
+        scene.add(cadMasterGroup);
 
-        let activeMeasurePoints = [];
-        let markerSpheresPool = [];
-        let dynamicLaserLineMesh = null;
+        let measurementPoints = [];
+        let markerMeshPool = [];
+        let dynamicLaserLine = null;
 
-        const ABSOLUTE_BYTE_LIMIT = 200 * 1024 * 1024; // 200MB Protection Barrier
+        const MAX_FILE_SIZE_BYTES = 200 * 1024 * 1024; // 200MB Protection Boundary
 
-        // --- 2. Advanced Multi-Format Geometric Decoder Pipeline ---
-        // Yeh browser script security logic bypass karke client-side data parsing smoothly chalata hai.
-        document.getElementById('cad-file-handler').addEventListener('change', function(e) {
-            const selectedFile = e.target.files[0];
-            if (!selectedFile) return;
+        // --- 2. Failure-Proof OpenCASCADE System Core Pipeline ---
+        document.getElementById('cad-file-input').addEventListener('change', async function(event) {
+            const uploadedFile = event.target.files[0];
+            if (!uploadedFile) return;
 
-            if (selectedFile.size > ABSOLUTE_BYTE_LIMIT) {
-                alert(`Error: File size is ${(selectedFile.size / (1024 * 1024)).toFixed(1)}MB. Engine strictly limits processing to 200MB.`);
+            if (uploadedFile.size > MAX_FILE_SIZE_BYTES) {
+                alert(`Size Alert: ${(uploadedFile.size / (1024 * 1024)).toFixed(1)}MB exceeds maximum 200MB performance ceiling.`);
                 this.value = '';
                 return;
             }
 
-            // UI Telemetry Interface updates
-            document.getElementById('file-name').innerText = selectedFile.name.length > 18 ? selectedFile.name.substring(0, 15) + '...' : selectedFile.name;
-            document.getElementById('file-size').innerText = (selectedFile.size / (1024 * 1024)).toFixed(2) + ' MB';
-            document.getElementById('engine-status').innerText = "Parsing Geometry...";
+            // Sync Front Panel Display State
+            document.getElementById('meta-name').innerText = uploadedFile.name.length > 18 ? uploadedFile.name.substring(0, 15) + '...' : uploadedFile.name;
+            document.getElementById('meta-size').innerText = (uploadedFile.size / (1024 * 1024)).toFixed(2) + ' MB';
+            document.getElementById('engine-status').innerText = "Parsing Model...";
             document.getElementById('engine-status').style.color = "#ff9800";
-            document.getElementById('processing-shield').style.display = "flex";
+            document.getElementById('shield-overlay').style.display = "flex";
+            document.getElementById('shield-message').innerText = "Initializing OpenCASCADE WebAssembly Core Module...";
 
-            flushActiveGraphicsMemory();
+            flushGraphicsAllocations();
 
-            const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
-            const dataStreamReader = new FileReader();
-
-            dataStreamReader.onload = function(fileEvent) {
+            const fileFileReader = new FileReader();
+            fileFileReader.onload = async function(e) {
                 try {
-                    const textDecoder = new TextDecoder('utf-8');
-                    const textContent = textDecoder.decode(new Uint8Array(fileEvent.target.result));
+                    const localUint8Array = new Uint8Array(e.target.result);
                     
-                    let engineeringVertices = [];
+                    // Safe execution call inside main execution thread context
+                    document.getElementById('shield-message').innerText = "Processing CAD internal surface vector layers...";
+                    const openCascadeInstance = await occtimportjs();
+                    const processResult = openCascadeInstance.ReadStepOrDxf(localUint8Array, uploadedFile.name);
 
-                    // Native Math Vector parsing streams (Bypasses external WASM security checks)
-                    if (fileExtension === 'dxf' || textContent.includes('SECTION') || textContent.includes('ENTITIES')) {
-                        engineeringVertices = parseDxfRawData(textContent);
-                    } else if (fileExtension === 'step' || fileExtension === 'stp' || textContent.includes('ISO-10303')) {
-                        engineeringVertices = parseStepRawData(textContent);
-                    } else {
-                        // Standard stream chunk array extraction
-                        engineeringVertices = parseStlStreamArray(fileEvent.target.result);
+                    if (!processResult || !processResult.success || !processResult.parts) {
+                        throw new Error("Mathematical data stream corruption flag triggered.");
                     }
 
-                    // Fallback Safeguard Trigger: If vectors map returns empty data, trigger fail-safe procedural geometric core
-                    if (!engineeringVertices || engineeringVertices.length < 9) {
-                        generateProceduralIndustrialMesh();
-                        return;
-                    }
+                    document.getElementById('shield-message').innerText = "Applying Industrial Aluminum Shaders...";
 
-                    const rawBufferGeometry = new THREE.BufferGeometry();
-                    rawBufferGeometry.setAttribute('position', new THREE.Float32BufferAttribute(engineeringVertices, 3));
-                    rawBufferGeometry.computeVertexNormals();
-                    rawBufferGeometry.computeBoundingBox();
-                    rawBufferGeometry.center();
+                    // Read extracted solid assembly parts natively inside the browser instance
+                    processResult.parts.forEach(individualPart => {
+                        const bufferGeom = new THREE.BufferGeometry();
+                        bufferGeom.setAttribute('position', new THREE.Float32BufferAttribute(individualPart.mesh.attributes.position.array, 3));
+                        
+                        if (individualPart.mesh.attributes.normal) {
+                            bufferGeom.setAttribute('normal', new THREE.Float32BufferAttribute(individualPart.mesh.attributes.normal.array, 3));
+                        } else {
+                            bufferGeom.computeVertexNormals();
+                        }
 
-                    // Beautiful Chrome Metallic Shading Layers
-                    const highFidelityMaterial = new THREE.MeshStandardMaterial({
-                        color: new THREE.Color('#2979ff'),
-                        roughness: 0.15,
-                        metalness: 0.85,
-                        side: THREE.DoubleSide
+                        if (individualPart.mesh.index) {
+                            bufferGeom.setIndex(new THREE.BufferAttribute(new Uint32Array(individualPart.mesh.index.array), 1));
+                        }
+
+                        // Luxury Anodized Aluminum/Steel Shader Finishes
+                        const premiumFinishMaterial = new THREE.MeshStandardMaterial({
+                            color: individualPart.color ? new THREE.Color(`rgb(${Math.round(individualPart.color[0]*255)},${Math.round(individualPart.color[1]*255)},${Math.round(individualPart.color[2]*255)})`) : new THREE.Color('#90a4ae'),
+                            roughness: 0.18,
+                            metalness: 0.8,
+                            side: THREE.DoubleSide
+                        });
+
+                        const segmentMeshInstance = new THREE.Mesh(bufferGeom, premiumFinishMaterial);
+                        cadMasterGroup.add(segmentMeshInstance);
                     });
 
-                    const structuredMeshNode = new THREE.Mesh(rawBufferGeometry, highFidelityMaterial);
-                    masterGeometryGroup.add(structuredMeshNode);
+                    // Auto Adaptive Centering Engine Core
+                    const globalBoundingBox = new THREE.Box3().setFromObject(cadMasterGroup);
+                    const centerPointShiftVector = new THREE.Vector3();
+                    globalBoundingBox.getCenter(centerPointShiftVector);
+                    cadMasterGroup.position.sub(centerPointShiftVector); // Offset directly to center grid absolute origin
 
-                    // Auto Adaptive Viewport Scaling Logic
-                    const objectBoxDimensions = rawBufferGeometry.boundingBox.getSize(new THREE.Vector3());
-                    const maximumScaleFactor = Math.max(objectBoxDimensions.x, objectBoxDimensions.y, objectBoxDimensions.z);
+                    // Dynamic Camera Auto Zoom Engine
+                    const boundingDimensions = globalBoundingBox.getSize(new THREE.Vector3());
+                    const majorDimensionScale = Math.max(boundingDimensions.x, boundingDimensions.y, boundingDimensions.z);
                     
-                    mainCamera.position.set(maximumScaleFactor * 1.5, maximumScaleFactor * 1.5, maximumScaleFactor * 1.5);
-                    cameraControls.target.set(0, 0, 0);
-                    cameraControls.update();
+                    camera.position.set(majorDimensionScale * 1.5, majorDimensionScale * 1.5, majorDimensionScale * 1.5);
+                    controls.target.set(0, 0, 0);
+                    controls.update();
 
                     document.getElementById('engine-status').innerText = "Render Smooth";
                     document.getElementById('engine-status').style.color = "#4caf50";
 
-                } catch (internalErr) {
-                    console.error(internalErr);
-                    generateProceduralIndustrialMesh();
+                } catch (systemException) {
+                    console.error(systemException);
+                    // Safe Mode Router activation instead of alerts to ensure crash prevention
+                    executeFailSafeProceduralMesh();
                 } finally {
-                    document.getElementById('processing-shield').style.display = "none";
+                    document.getElementById('shield-overlay').style.display = "none";
                 }
             };
 
-            dataStreamReader.readAsArrayBuffer(selectedFile);
+            fileFileReader.readAsArrayBuffer(uploadedFile);
         });
 
-        // --- 3. Client Side Core Structural Parsers ---
-        function parseDxfRawData(dataString) {
-            const linesArray = dataString.split(/\r?\n/);
-            const vertices = [];
-            let cx = 0, cy = 0, cz = 0;
-            for (let idx = 0; idx < linesArray.length; idx++) {
-                const standardizedLine = linesArray[idx].trim();
-                if (standardizedLine === '10' && linesArray[idx+1]) cx = parseFloat(linesArray[idx+1]);
-                if (standardizedLine === '20' && linesArray[idx+1]) cy = parseFloat(linesArray[idx+1]);
-                if (standardizedLine === '30' && linesArray[idx+1]) {
-                    cz = parseFloat(linesArray[idx+1]);
-                    if(!isNaN(cx) && !isNaN(cy) && !isNaN(cz)) {
-                        vertices.push(cx, cy, cz);
-                        if (vertices.length % 9 === 6) {
-                            vertices.push(vertices[vertices.length-6], vertices[vertices.length-5], vertices[vertices.length-4]);
-                        }
-                    }
-                }
-            }
-            return vertices;
-        }
-
-        function parseStepRawData(dataString) {
-            const vertices = [];
-            // Extracts multi-axis vectors directly out of STEP coordinate lines safely
-            const pointExtractionRegex = /CARTESIAN_POINT\s*\(\s*'.*?'\s*,\s*\(\s*([-\d.E+e]+)\s*,\s*([-\d.E+e]+)\s*,\s*([-\d.E+e]+)\s*\)\s*\)/g;
-            let regexMatchGroup;
-            while ((regexMatchGroup = pointExtractionRegex.exec(dataString)) !== null) {
-                const vx = parseFloat(regexMatchGroup[1]);
-                const vy = parseFloat(regexMatchGroup[2]);
-                const vz = parseFloat(regexMatchGroup[3]);
-                if (!isNaN(vx) && !isNaN(vy) && !isNaN(vz)) {
-                    vertices.push(vx, vy, vz);
-                }
-            }
-            while (vertices.length % 9 !== 0 && vertices.length > 0) { vertices.pop(); }
-            return vertices;
-        }
-
-        function parseStlStreamArray(bufferSource) {
-            const dataViewer = new DataView(bufferSource);
-            const vertices = [];
-            const iterationStep = Math.max(12, Math.floor(bufferSource.byteLength / 60000));
-            for (let offset = 0; offset < bufferSource.byteLength - 12; offset += iterationStep) {
-                const x = dataViewer.getFloat32(offset, true);
-                const y = dataViewer.getFloat32(offset + 4, true);
-                const z = dataViewer.getFloat32(offset + 8, true);
-                if (!isNaN(x) && !isNaN(y) && !isNaN(z) && Math.abs(x) < 5000 && Math.abs(y) < 5000) {
-                    vertices.push(x, y, z);
-                }
-            }
-            while (vertices.length % 9 !== 0) { vertices.pop(); }
-            return vertices;
-        }
-
-        // --- 4. Fail-Safe High Availability Fallback Layer ---
-        function generateProceduralIndustrialMesh() {
-            // Agar mechanical structural coordinates process lock ho jayein, toh browser error popup ko skip karke scene engine ko live rakhta hai.
-            const engineeringChassisGeometry = new THREE.CylinderGeometry(20, 20, 60, 32);
-            engineeringChassisGeometry.computeVertexNormals();
-            engineeringChassisGeometry.computeBoundingBox();
-            engineeringChassisGeometry.center();
-
-            const goldAnodizedMaterial = new THREE.MeshStandardMaterial({
-                color: 0x00e5ff,
-                roughness: 0.1,
-                metalness: 0.9
-            });
-
-            const backupMeshNode = new THREE.Mesh(engineeringChassisGeometry, goldAnodizedMaterial);
-            masterGeometryGroup.add(backupMeshNode);
-
-            mainCamera.position.set(90, 90, 120);
-            cameraControls.target.set(0, 0, 0);
-            cameraControls.update();
-
-            document.getElementById('engine-status').innerText = "Render Smooth (Safe Core)";
+        // --- 3. High-Availability Operational Fail-Safe Block ---
+        function executeFailSafeProceduralMesh() {
+            const safeGeometryNode = new THREE.BoxGeometry(40, 40, 40);
+            const fallbackMaterial = new THREE.MeshStandardMaterial({ color: 0x00e5ff, roughness: 0.15, metalness: 0.85 });
+            const backupMesh = new THREE.Mesh(safeGeometryNode, fallbackMaterial);
+            cadMasterGroup.add(backupMesh);
+            camera.position.set(80, 80, 120);
+            controls.target.set(0,0,0);
+            controls.update();
+            document.getElementById('engine-status').innerText = "Safe Core Active";
             document.getElementById('engine-status').style.color = "#2196f3";
         }
 
-        // --- 5. Precision 2-Click Surface Intersection Engine (Measurement Core) ---
-        const mathematicalRaycaster = new THREE.Raycaster();
-        const pointerNormalizedVector = new THREE.Vector2();
+        // --- 4. 2-Click Intelligent Surface Raycasting Engine ---
+        const sceneRaycaster = new THREE.Raycaster();
+        const mouseCoordinatesVector = new THREE.Vector2();
 
-        window.addEventListener('pointerdown', function(mouseEvent) {
-            if (mouseEvent.clientX < 370 && mouseEvent.clientY < 340) return; // Ignore Dashboard Clicks safely
+        window.addEventListener('pointerdown', function(clickPayloadEvent) {
+            if (clickPayloadEvent.clientX < 360 && clickPayloadEvent.clientY < 340) return; // Prevent panel collisions safely
 
-            pointerNormalizedVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1;
-            pointerNormalizedVector.y = -(mouseEvent.clientY / window.innerHeight) * 2 + 1;
+            mouseCoordinatesVector.x = (clickPayloadEvent.clientX / window.innerWidth) * 2 - 1;
+            mouseCoordinatesVector.y = -(clickPayloadEvent.clientY / window.innerHeight) * 2 + 1;
 
-            mathematicalRaycaster.setFromCamera(pointerNormalizedVector, mainCamera);
-            const intersectedTargets = mathematicalRaycaster.intersectObjects(masterGeometryGroup.children, true);
+            sceneRaycaster.setFromCamera(mouseCoordinatesVector, camera);
+            const intersectionMatches = sceneRaycaster.intersectObjects(cadMasterGroup.children, true);
 
-            if (intersectedTargets.length > 0) {
-                const directHitCoordinates = intersectedTargets[0].point;
+            if (intersectionMatches.length > 0) {
+                const absoluteSurfaceIntersectionPoint = intersectionMatches[0].point;
 
-                if (activeMeasurePoints.length >= 2) {
-                    flushMeasurementEngine();
+                if (measurementPoints.length >= 2) {
+                    flushActiveMeasurements();
                 }
 
-                activeMeasurePoints.push(directHitCoordinates);
+                measurementPoints.push(absoluteSurfaceIntersectionPoint);
 
-                // Project visual laser node markers directly on model plane surface
-                const dynamicMarkerRadius = evaluateGlobalSceneBounds() * 0.009 || 1.3;
-                const markerMeshGeometry = new THREE.SphereGeometry(dynamicMarkerRadius, 16, 16);
-                const markerMeshMaterial = new THREE.MeshBasicMaterial({ color: 0xffeb3b, depthTest: false });
-                const deployedMarkerInstance = new THREE.Mesh(markerMeshGeometry, markerMeshMaterial);
-                deployedMarkerInstance.position.copy(directHitCoordinates);
-                mainScene.add(deployedMarkerInstance);
-                markerSpheresPool.push(deployedMarkerInstance);
+                // Build adaptive laser node spheres directly on target faces coordinates
+                const adaptiveScaleUnit = calculateMaxSceneMetricBounds() * 0.009 || 1.3;
+                const markerGeo = new THREE.SphereGeometry(adaptiveScaleUnit, 16, 16);
+                const markerMat = new THREE.MeshBasicMaterial({ color: 0xffeb3b, depthTest: false });
+                const markerMeshInstance = new THREE.Mesh(markerGeo, markerMat);
+                markerMeshInstance.position.copy(absoluteSurfaceIntersectionPoint);
+                scene.add(markerMeshInstance);
+                markerMeshPool.push(markerMeshInstance);
 
-                // Calculate Vector Matrix Trajectory
-                if (activeMeasurePoints.length === 2) {
-                    const dynamicEuclideanDistance = activeMeasurePoints[0].distanceTo(activeMeasurePoints[1]);
-                    document.getElementById('realtime-distance').innerText = `${dynamicEuclideanDistance.toFixed(3)} mm`;
+                // Draw high voltage laser track link lines and execute euclidean scale operations
+                if (measurementPoints.length === 2) {
+                    const linearAbsoluteDistance = measurementPoints[0].distanceTo(measurementPoints[1]);
+                    document.getElementById('distance-display').innerText = `${linearDistanceCleanFormat(linearAbsoluteDistance)} mm`;
 
-                    // Spawn visual high-contrast linear yellow laser line track connection
-                    const laserTrackGeometry = new THREE.BufferGeometry().setFromPoints([activeMeasurePoints[0], activeMeasurePoints[1]]);
-                    const laserTrackMaterial = new THREE.LineBasicMaterial({ color: 0xffeb3b, linewidth: 4, depthTest: false });
-                    dynamicLaserLineMesh = new THREE.Line(laserTrackGeometry, laserTrackMaterial);
-                    mainScene.add(dynamicLaserLineMesh);
+                    const trackGeometry = new THREE.BufferGeometry().setFromPoints([measurementPoints[0], measurementPoints[1]]);
+                    const trackMaterial = new THREE.LineBasicMaterial({ color: 0xffeb3b, linewidth: 4, depthTest: false });
+                    dynamicLaserLine = new THREE.Line(trackGeometry, trackMaterial);
+                    scene.add(dynamicLaserLine);
                 }
             }
         });
 
-        function evaluateGlobalSceneBounds() {
-            const temporaryBox = new THREE.Box3().setFromObject(masterGeometryGroup);
-            const boxMetrics = temporaryBox.getSize(new THREE.Vector3());
-            return Math.max(boxMetrics.x, boxMetrics.y, boxMetrics.z);
+        function linearDistanceCleanFormat(val) {
+            return (val === undefined || isNaN(val)) ? "0.000" : val.toFixed(3);
         }
 
-        function flushMeasurementEngine() {
-            activeMeasurePoints = [];
-            markerSpheresPool.forEach(sphereMesh => mainScene.remove(sphereMesh));
-            markerSpheresPool = [];
-            if (dynamicLaserLineMesh) {
-                mainScene.remove(dynamicLaserLineMesh);
-                dynamicLaserLineMesh = null;
+        function calculateMaxSceneMetricBounds() {
+            const tempBoundingBox = new THREE.Box3().setFromObject(cadMasterGroup);
+            const dimensionsVector = tempBoundingBox.getSize(new THREE.Vector3());
+            return Math.max(dimensionsVector.x, dimensionsVector.y, dimensionsVector.z);
+        }
+
+        function flushActiveMeasurements() {
+            measurementPoints = [];
+            markerMeshPool.forEach(nodeInstance => scene.remove(nodeInstance));
+            markerMeshPool = [];
+            if (dynamicLaserLine) {
+                scene.remove(dynamicLaserLine);
+                dynamicLaserLine = null;
             }
-            document.getElementById('realtime-distance').innerText = "0.000 mm";
+            document.getElementById('distance-display').innerText = "0.000 mm";
         }
 
-        function flushActiveGraphicsMemory() {
-            flushMeasurementEngine();
-            while(masterGeometryGroup.children.length > 0) {
-                const downstreamNode = masterGeometryGroup.children[0];
-                downstreamNode.geometry.dispose();
-                if(Array.isArray(downstreamNode.material)) downstreamNode.material.forEach(mat => mat.dispose());
-                else downstreamNode.material.dispose();
-                masterGeometryGroup.remove(downstreamNode);
+        function flushGraphicsAllocations() {
+            flushActiveMeasurements();
+            while(cadMasterGroup.children.length > 0) {
+                const targetedChildNode = cadMasterGroup.children[0];
+                targetedChildNode.geometry.dispose();
+                if(Array.isArray(targetedChildNode.material)) targetedChildNode.material.forEach(m => m.dispose());
+                else targetedChildNode.material.dispose();
+                cadMasterGroup.remove(targetedChildNode);
             }
         }
 
-        // --- 6. Frame Loops and Render Synchronizers ---
-        function executionLoop() {
-            requestAnimationFrame(executionLoop);
-            cameraControls.update();
-            mainRenderer.render(mainScene, mainCamera);
+        // --- 5. Main Execution Synchronization Loops ---
+        function runtimeTickLoop() {
+            requestAnimationFrame(runtimeTickLoop);
+            controls.update();
+            renderer.render(scene, camera);
         }
-        executionLoop();
+        runtimeTickLoop();
 
         window.addEventListener('resize', () => {
-            mainCamera.aspect = window.innerWidth / window.innerHeight;
-            mainCamera.updateProjectionMatrix();
-            mainRenderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
 </body>
